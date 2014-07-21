@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SafeFolder</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="send_via">Send Via</string>
+    <string name="encrypt">Encrypt</string>
+    <string name="plus">+</string>
+</resources>
