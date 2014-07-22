@@ -2,6 +2,8 @@ package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,13 +13,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.content.pm.PackageManager;
+
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import android.database.Cursor;
-import android.widget.Toast;
+import java.util.List;
 
 public class Encrypt extends Activity {
 
@@ -59,6 +64,7 @@ public class Encrypt extends Activity {
         sendViaButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 String response = EncryptFiles(GetFileList(), emailAddressArray);
+                sendEmail(GetFileList(), emailAddressArray);
                 Close();
             }
         });
@@ -71,6 +77,34 @@ public class Encrypt extends Activity {
         });
     }
 
+    protected void sendEmail(ArrayList encryptedFileList, ArrayList emailList){
+        String toAddress = StringUtils.join(emailList, ",");
+        String subject = "";
+        String body = "";
+        ArrayList<String> attachmentPath = encryptedFileList;
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[] { toAddress });
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+            intent.setType("message/rfc822");
+
+            ArrayList<Uri> uri = new ArrayList<Uri>();
+            for (int i = 0; i < attachmentPath.size(); i++) {
+                File file = new File(attachmentPath.get(i));
+                uri.add(Uri.fromFile(file));
+            }
+
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uri);
+
+            this.startActivity(Intent.createChooser(intent, "Choose an email application..."));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            //throw ex;
+        }
+    }
     /**
      * Called after onCreate() and before onResume()
      */

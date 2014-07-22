@@ -16,9 +16,24 @@ android {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        }
+    }
+}
+
+repositories {
+    maven {
+        url "http://10.18.0.16:8081/artifactory/repo/"
+        credentials {
+            username 'msneen'
+            password 'password'
+        }
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.encryptics:EncrypticsForAndroid:1.0.3-development'
 }
