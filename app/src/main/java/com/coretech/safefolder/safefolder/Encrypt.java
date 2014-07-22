@@ -22,11 +22,11 @@ import android.widget.Toast;
 public class Encrypt extends Activity {
 
     String[] items = {};
-    ArrayAdapter<String> emailControlAdapter;
+    ArrayAdapter<String> emailListViewAdapter;
     private final static String TAG = "TestActivity";
 
     /**
-     * First to be called when the Activity starts
+     * First to be called when the Activity starts; only called once
      * @param savedInstanceState
      */
     @Override
@@ -34,9 +34,10 @@ public class Encrypt extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_encrypt);
 
-        final ListView emailList = (ListView) findViewById(R.id.listView);
-        final ArrayList<String> emailArray = new ArrayList();
-        emailControlAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailArray);
+        final ListView emailListView = (ListView) findViewById(R.id.listView);
+        final ArrayList<String> emailAddressArray = new ArrayList();
+        emailListViewAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailAddressArray);
+
         Button addEmailButton = (Button) findViewById(R.id.add_email);
         Button sendViaButton = (Button) findViewById(R.id.send_via);
         Button encryptButton = (Button)findViewById(R.id.encrypt);
@@ -44,58 +45,30 @@ public class Encrypt extends Activity {
         addEmailButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 //add email button click event.  Add email to list
-                TextView editText = (TextView) findViewById(R.id.editText);
-                String emailAddress = (String) editText.getText().toString();
-                editText.setText(""); // Clear the textbox
+                TextView emailTextBox = (TextView) findViewById(R.id.editText);
+                String emailAddress = (String) emailTextBox.getText().toString();
+                emailTextBox.setText(""); // Clear the textbox
 
                 // Take the text from the box and add it to the list view
-                emailArray.add(emailAddress);
-                emailList.setAdapter(emailControlAdapter);
-                emailControlAdapter.notifyDataSetChanged();
+                emailAddressArray.add(emailAddress);
+                emailListView.setAdapter(emailListViewAdapter);
+                emailListViewAdapter.notifyDataSetChanged();
             }
         });
 
         sendViaButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                String response = EncryptFiles(GetFileList(), emailArray);
-
+                String response = EncryptFiles(GetFileList(), emailAddressArray);
                 Close();
             }
         });
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                String response = EncryptFiles(GetFileList(), emailArray);
+                String response = EncryptFiles(GetFileList(), emailAddressArray);
                 Close();
             }
         });
-    }
-
-    /**
-     * Called just before the activity is shut down
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "On Destroy .....");
-    }
-
-    /**
-     * Called after the Activity is running and before onStop()
-     */
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i(TAG, "On Pause .....");
-    }
-
-    /**
-     * Called as a result of onStop()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.i(TAG, "On Restart .....");
     }
 
     /**
@@ -108,6 +81,24 @@ public class Encrypt extends Activity {
     }
 
     /**
+     * Called after onStart() as a result of onPause()
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "On Resume .....");
+    }
+
+    /**
+     * Called after the Activity is running and before onStop()
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "On Pause .....");
+    }
+
+    /**
      * Called before onDestroy()
      */
     @Override
@@ -117,12 +108,21 @@ public class Encrypt extends Activity {
     }
 
     /**
-     * Called after onStart() as a result of onPause()
+     * Called as a result of onStop()
      */
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(TAG, "On Resume .....");
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "On Restart .....");
+    }
+
+    /**
+     * Called just before the activity is shut down
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "On Destroy .....");
     }
 
     private void Close(){
@@ -216,7 +216,7 @@ public class Encrypt extends Activity {
         MediaStore.Files.FileColumns.DATA
         */
 
-        String [] proj = { MediaStore.Files.FileColumns.DATA };
+        String [] proj = { MediaStore.Audio.Media.DATA };
 
         Cursor cursor = managedQuery( contentUri,
                 proj, // Which columns to return
@@ -224,7 +224,7 @@ public class Encrypt extends Activity {
                 null,       // WHERE clause selection arguments (none)
                 null); // Order-by clause (ascending by name)
 
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
         cursor.moveToFirst();
 
         return cursor.getString(column_index);
