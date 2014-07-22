@@ -16,32 +16,22 @@ import android.widget.ListView;
 import java.io.File;
 import java.util.ArrayList;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.os.*;
 import android.widget.Toast;
-
-import static android.app.PendingIntent.getActivity;
-import static android.app.PendingIntent.writePendingIntentOrNullToParcel;
-
 
 public class Encrypt extends Activity {
 
     String[] items = {};
-    ArrayAdapter<String> adapter; //= new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1);
+    ArrayAdapter<String> emailArrayAdapter;
+    ListView emailList = (ListView) findViewById(R.id.listView);
+    ArrayList<String> emailArray = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_encrypt);
 
-        //receiveFileInfo();
+        emailArrayAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailArray);
 
-        final ListView emailList = (ListView) findViewById(R.id.listView);
-        final ArrayList<String> emailArray = new ArrayList();
-        adapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailArray);
         Button addEmail = (Button) findViewById(R.id.add_email);
         Button sendVia = (Button) findViewById(R.id.send_via);
         Button encrypt=(Button)findViewById(R.id.encrypt);
@@ -50,20 +40,19 @@ public class Encrypt extends Activity {
             public void onClick(View v){
                 //add email button click event.  Add email to list
                 TextView editText = (TextView) findViewById(R.id.editText);
-                String emailAddress = (String) editText.getText().toString();
+                String emailAddress = editText.getText().toString();
                 editText.setText(""); // Clear the textbox
 
                 // Take the text from the box and add it to the list view
                 emailArray.add(emailAddress);
-                emailList.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
+                emailList.setAdapter(emailArrayAdapter);
+                emailArrayAdapter.notifyDataSetChanged();
             }
         });
 
         sendVia.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 String response = EncryptFiles(GetFileList(), emailArray);
-
                 Close();
             }
         });
@@ -160,12 +149,18 @@ public class Encrypt extends Activity {
     // Convert the image URI to the direct file system path of the image file
     public String getRealPathFromURI(Uri contentUri) {
 
-        String [] proj={MediaStore.Images.Media.DATA};
+        String [] proj = {
+                MediaStore.Files.FileColumns.DATA,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Video.Media.DATA};
+
         Cursor cursor = managedQuery( contentUri,
                 proj, // Which columns to return
                 null,       // WHERE clause; which rows to return (all rows)
                 null,       // WHERE clause selection arguments (none)
                 null); // Order-by clause (ascending by name)
+
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
 
