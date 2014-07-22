@@ -250,7 +250,9 @@ public class Encrypt extends Activity {
         MediaStore.Files.FileColumns.DATA
         */
 
-        String [] proj = { MediaStore.Audio.Media.DATA };
+        return contentUri.getPath();
+        /*
+        String [] proj = { MediaStore.MediaColumns.DATA };
 
         Cursor cursor = managedQuery( contentUri,
                 proj, // Which columns to return
@@ -258,9 +260,10 @@ public class Encrypt extends Activity {
                 null,       // WHERE clause selection arguments (none)
                 null); // Order-by clause (ascending by name)
 
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         cursor.moveToFirst();
 
         return cursor.getString(column_index);
+        */
     }
 }
