@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,48 +22,107 @@ import android.widget.Toast;
 public class Encrypt extends Activity {
 
     String[] items = {};
-    ArrayAdapter<String> emailArrayAdapter;
-    ListView emailList = (ListView) findViewById(R.id.listView);
-    ArrayList<String> emailArray = new ArrayList();
+    ArrayAdapter<String> emailControlAdapter;
+    private final static String TAG = "TestActivity";
 
+    /**
+     * First to be called when the Activity starts
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_encrypt);
 
-        emailArrayAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailArray);
+        final ListView emailList = (ListView) findViewById(R.id.listView);
+        final ArrayList<String> emailArray = new ArrayList();
+        emailControlAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailArray);
+        Button addEmailButton = (Button) findViewById(R.id.add_email);
+        Button sendViaButton = (Button) findViewById(R.id.send_via);
+        Button encryptButton = (Button)findViewById(R.id.encrypt);
 
-        Button addEmail = (Button) findViewById(R.id.add_email);
-        Button sendVia = (Button) findViewById(R.id.send_via);
-        Button encrypt=(Button)findViewById(R.id.encrypt);
-
-        addEmail.setOnClickListener(new Button.OnClickListener(){
+        addEmailButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 //add email button click event.  Add email to list
                 TextView editText = (TextView) findViewById(R.id.editText);
-                String emailAddress = editText.getText().toString();
+                String emailAddress = (String) editText.getText().toString();
                 editText.setText(""); // Clear the textbox
 
                 // Take the text from the box and add it to the list view
                 emailArray.add(emailAddress);
-                emailList.setAdapter(emailArrayAdapter);
-                emailArrayAdapter.notifyDataSetChanged();
+                emailList.setAdapter(emailControlAdapter);
+                emailControlAdapter.notifyDataSetChanged();
             }
         });
 
-        sendVia.setOnClickListener(new Button.OnClickListener(){
+        sendViaButton.setOnClickListener(new Button.OnClickListener(){
+            public void onClick(View v){
+                String response = EncryptFiles(GetFileList(), emailArray);
+
+                Close();
+            }
+        });
+
+        encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 String response = EncryptFiles(GetFileList(), emailArray);
                 Close();
             }
         });
+    }
 
-        encrypt.setOnClickListener(new Button.OnClickListener(){
-            public void onClick(View v){
-                String response = EncryptFiles(GetFileList(), emailArray);
-                Close();
-            }
-        });
+    /**
+     * Called just before the activity is shut down
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "On Destroy .....");
+    }
+
+    /**
+     * Called after the Activity is running and before onStop()
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "On Pause .....");
+    }
+
+    /**
+     * Called as a result of onStop()
+     */
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "On Restart .....");
+    }
+
+    /**
+     * Called after onCreate() and before onResume()
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "On Start .....");
+    }
+
+    /**
+     * Called before onDestroy()
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "On Stop .....");
+    }
+
+    /**
+     * Called after onStart() as a result of onPause()
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "On Resume .....");
     }
 
     private void Close(){
@@ -149,11 +209,14 @@ public class Encrypt extends Activity {
     // Convert the image URI to the direct file system path of the image file
     public String getRealPathFromURI(Uri contentUri) {
 
-        String [] proj = {
-                MediaStore.Files.FileColumns.DATA,
-                MediaStore.Images.Media.DATA,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Video.Media.DATA};
+        /*
+        MediaStore.Images.Media.DATA,
+        MediaStore.Video.Media.DATA,
+        MediaStore.Audio.Media.DATA,
+        MediaStore.Files.FileColumns.DATA
+        */
+
+        String [] proj = { MediaStore.Files.FileColumns.DATA };
 
         Cursor cursor = managedQuery( contentUri,
                 proj, // Which columns to return
@@ -161,7 +224,7 @@ public class Encrypt extends Activity {
                 null,       // WHERE clause selection arguments (none)
                 null); // Order-by clause (ascending by name)
 
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
         cursor.moveToFirst();
 
         return cursor.getString(column_index);
