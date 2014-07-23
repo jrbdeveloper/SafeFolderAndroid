@@ -59,48 +59,27 @@ public class Encrypt extends Activity {
 
         sendViaButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                String response = EncryptFiles(GetFileList(), emailAddressArray);
-                sendEmail(GetFileList(), emailAddressArray);
+                EmailService emailService = new EmailService();
+                FileService fileService = new FileService();
+                EncryptService encryptService = new EncryptService();
+
+                String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
+                emailService.Send(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
                 Close();
             }
         });
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                String response = EncryptFiles(GetFileList(), emailAddressArray);
+                FileService fileService = new FileService();
+                EncryptService encryptService = new EncryptService();
+
+                String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
                 Close();
             }
         });
     }
 
-    protected void sendEmail(ArrayList encryptedFileList, ArrayList emailList){
-        String toAddress = TextUtils.join(",", emailList);
-        String subject = "";
-        String body = "";
-        ArrayList<String> attachmentPath = encryptedFileList;
-
-        try {
-            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[] { toAddress });
-            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            intent.putExtra(Intent.EXTRA_TEXT, body);
-            intent.setType("message/rfc822");
-
-            ArrayList<Uri> uri = new ArrayList<Uri>();
-            for (int i = 0; i < attachmentPath.size(); i++) {
-                File file = new File(attachmentPath.get(i));
-                uri.add(Uri.fromFile(file));
-            }
-
-            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uri);
-
-            this.startActivity(Intent.createChooser(intent, "Choose an email application..."));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            //throw ex;
-        }
-    }
     /**
      * Called after onCreate() and before onResume()
      */
@@ -160,56 +139,6 @@ public class Encrypt extends Activity {
         System.exit(1);
     }
 
-    private String EncryptFiles(ArrayList fileList, ArrayList emailList){
-        ArrayList<String> files = GetFileList();
-
-        for(String item: files) {
-            File inputFile = new File(item);
-            Toast.makeText(getApplication().getBaseContext(), inputFile.getName(), Toast.LENGTH_LONG).show();
-
-            // Call Encryptics API here
-            //String response = Encryptics.EncryptFile(intputFile, new(){
-            //
-            //});
-        }
-
-        return "";
-    }
-
-    //Call this from the encrypt and Send Button.  This method gets the file(s) that were selected in the previous app.
-    private ArrayList<String> GetFileList() {
-        Intent theIntent = getIntent();
-        String theAction = theIntent.getAction();
-        ArrayList<String> fileArray = new ArrayList<String>();
-
-        if (Intent.ACTION_SEND.equals(theAction)) {
-            Bundle bundle = getIntent().getExtras();
-            Uri i = (Uri) bundle.get("android.intent.extra.STREAM");
-
-            String inputfilename = getRealPathFromURI(i);
-            String outputfilename = getFileNameFromPath(getRealPathFromURI(i));
-
-            //mws delete the toast and encrypt here
-            fileArray.add(inputfilename);
-
-        } else if (Intent.ACTION_SEND_MULTIPLE.equals(theAction) && theIntent.hasExtra(Intent.EXTRA_STREAM)) {
-
-            ArrayList list = theIntent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-
-            for (Object p : list) {
-                Uri uri = (Uri) p; /// do something with it.
-                //Create input and output paths
-                String inputfilename = getRealPathFromURI(uri);
-                String outputfilename = getFileNameFromPath(getRealPathFromURI(uri));
-
-                //mws delete the toast and encrypt here
-                fileArray.add(inputfilename);
-            }
-        }
-
-        return fileArray;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -227,39 +156,5 @@ public class Encrypt extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public String getFileNameFromPath(String input) {
-        String[] temp;
-        String delimeter = "/";
-        temp = input.split(delimeter);
-        return temp[temp.length - 1];
-    }
-
-    // Convert the image URI to the direct file system path of the image file
-    public String getRealPathFromURI(Uri contentUri) {
-
-        /*
-        MediaStore.Images.Media.DATA,
-        MediaStore.Video.Media.DATA,
-        MediaStore.Audio.Media.DATA,
-        MediaStore.Files.FileColumns.DATA
-        */
-
-        return contentUri.getPath();
-        /*
-        String [] proj = { MediaStore.MediaColumns.DATA };
-
-        Cursor cursor = managedQuery( contentUri,
-                proj, // Which columns to return
-                null,       // WHERE clause; which rows to return (all rows)
-                null,       // WHERE clause selection arguments (none)
-                null); // Order-by clause (ascending by name)
-
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        cursor.moveToFirst();
-
-        return cursor.getString(column_index);
-        */
     }
 }
