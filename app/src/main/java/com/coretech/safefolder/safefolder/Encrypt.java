@@ -2,11 +2,11 @@ package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,13 +16,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.pm.PackageManager;
-
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Encrypt extends Activity {
 
@@ -78,7 +74,7 @@ public class Encrypt extends Activity {
     }
 
     protected void sendEmail(ArrayList encryptedFileList, ArrayList emailList){
-        String toAddress = StringUtils.join(emailList, ",");
+        String toAddress = TextUtils.join(",", emailList);
         String subject = "";
         String body = "";
         ArrayList<String> attachmentPath = encryptedFileList;

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="EncrypticsForAndroid-1.0.3-development">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.encryptics/EncrypticsForAndroid/1.0.3-development/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.encryptics/EncrypticsForAndroid/1.0.3-development/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
