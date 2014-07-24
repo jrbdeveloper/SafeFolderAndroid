@@ -1,12 +1,7 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,9 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.File;
 import java.util.ArrayList;
 
 public class Encrypt extends Activity {
@@ -36,7 +28,7 @@ public class Encrypt extends Activity {
         setContentView(R.layout.activity_encrypt);
 
         final ListView emailListView = (ListView) findViewById(R.id.listView);
-        final ArrayList<String> emailAddressArray = new ArrayList();
+        final ArrayList<String> emailAddressArray = new ArrayList<String>();
         emailListViewAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailAddressArray);
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
@@ -47,7 +39,7 @@ public class Encrypt extends Activity {
             public void onClick(View v){
                 //add email button click event.  Add email to list
                 TextView emailTextBox = (TextView) findViewById(R.id.editText);
-                String emailAddress = (String) emailTextBox.getText().toString();
+                String emailAddress = emailTextBox.getText().toString();
                 emailTextBox.setText(""); // Clear the textbox
 
                 // Take the text from the box and add it to the list view
@@ -65,7 +57,7 @@ public class Encrypt extends Activity {
 
                 String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
                 emailService.Send(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-//                Close();
+                Close();
             }
         });
 
@@ -75,7 +67,7 @@ public class Encrypt extends Activity {
                 EncryptService encryptService = new EncryptService();
 
                 String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-//                Close();
+                Close();
             }
         });
     }

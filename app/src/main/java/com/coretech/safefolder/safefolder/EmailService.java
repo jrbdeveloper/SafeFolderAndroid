@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -29,7 +28,7 @@ public class EmailService {
 
             ArrayList<Uri> uri = new ArrayList<Uri>();
             for (int i = 0; i < attachmentPath.size(); i++) {
-                File file = new File(attachmentPath.get(i));
+                File file = new File(attachmentPath.get(i)+ ".safe");
                 uri.add(Uri.fromFile(file));
             }
 

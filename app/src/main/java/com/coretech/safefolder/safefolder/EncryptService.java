@@ -63,38 +63,41 @@ public class EncryptService {
 
             try {
                 for(String item : fileList) {
-                    File file = new File(item);
-                    FileInputStream fis = new FileInputStream(file);
+					if(!item.contains(".safe")){
+						File file = new File(item);
+						FileInputStream fis = new FileInputStream(file);
 
-                    OutputStream outputStream = new FileOutputStream(item +".safe");
+						OutputStream outputStream = new FileOutputStream(item +".safe");
 
-                    SafeFile.Builder builder = new SafeFile.Builder();
+						SafeFile.Builder builder = new SafeFile.Builder();
 
-                    // The SafeFileType is the type you will use to identify your company's .SAFE file
-                    // from other .SAFE files that may be also named .SAFE
-                    builder.setSafeFileType("com.coretech.safefolder")//TODO accept or reject this name
-                            // The SafeFileVersion is your company's version so you can
-                            // better identify your own changes to the architecture of the .SAFE
-                            .setSafeFileVersion("1.2.0")//TODO settle on a version number, probably 1.0 or similar
-                            // Subject is required, but if you won't use it, it can be anything that's not an empty string
-                            // However, it's one of a few identifying pieces of a .SAFE file prior to its decryption (the subject
-                            // is never encrypted)
-                            .setSubject("not used")
-                            // Adding your content here!
-                            .addContent(fis, (int)file.length());
+						// The SafeFileType is the type you will use to identify your company's .SAFE file
+						// from other .SAFE files that may be also named .SAFE
+						builder.setSafeFileType("com.coretech.safefolder")//TODO accept or reject this name
+								// The SafeFileVersion is your company's version so you can
+								// better identify your own changes to the architecture of the .SAFE
+								.setSafeFileVersion("1.2.0")//TODO settle on a version number, probably 1.0 or similar
+										// Subject is required, but if you won't use it, it can be anything that's not an empty string
+										// However, it's one of a few identifying pieces of a .SAFE file prior to its decryption (the subject
+										// is never encrypted)
+								.setSubject("not used")
+										// Adding your content here!
+								.addContent(fis, (int)file.length());
 
-                    for(String recipient : recipientList) {
-                        builder.addRecipient(recipient);
-                    }
+						for(String recipient : recipientList) {
+							builder.addRecipient(recipient);
+						}
 
-                    // Building the .SAFE file is another network operation, keeping it in the background
-                    // would be best
-                    codeToReturn = builder.build(context, outputStream);
+						// Building the .SAFE file is another network operation, keeping it in the background
+						// would be best
+						codeToReturn = builder.build(context, outputStream);
+					}
                 }
             }
             catch(Exception ex){
                 //throw ex;
                 //TODO handle this error
+				String x = ex.getMessage();
             }
 
             return codeToReturn;
