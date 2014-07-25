@@ -37,17 +37,59 @@
                 android:layout_gravity="right"
                 android:layout_toRightOf="@+id/editText"/>
         </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
 
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Copy"
+                android:textSize="13dp"
+                android:id="@+id/copyCheck"
+                android:enabled="false"
+                android:layout_weight="1"/>
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView"
-        android:layout_alignTop="@+id/linearLayout"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="50dp" />
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:textSize="13dp"
+                android:id="@+id/saveCheck"
+                android:enabled="false"
+                android:layout_weight="1"/>
+
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Forward"
+                android:textSize="13dp"
+                android:id="@+id/forwardCheck"
+                android:enabled="false"
+                android:layout_weight="1"/>
+
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Print"
+                android:textSize="13dp"
+                android:id="@+id/printCheck"
+                android:enabled="false"
+                android:layout_weight="1"/>
+            </LinearLayout>
+
+            <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listView"
+            android:layout_alignTop="@+id/linearLayout"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="left"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="50dp" />
+
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
@@ -64,8 +106,9 @@
                 android:layout_height="wrap_content"
                 android:text="@+string/encrypt"
                 android:layout_toRightOf="@id/send_via"
-                android:layout_alignParentBottom="true"/>
-            </RelativeLayout>
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
 </LinearLayout>
 
 </RelativeLayout>
