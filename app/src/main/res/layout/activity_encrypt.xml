@@ -32,7 +32,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+"
+                android:text="@string/plus"
                 android:id="@+id/add_email"
                 android:layout_gravity="right"
                 android:layout_toRightOf="@+id/editText"/>
@@ -46,7 +46,7 @@
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Copy"
+                android:text="@string/copy"
                 android:textSize="13dp"
                 android:id="@+id/copyCheck"
                 android:enabled="false"
@@ -55,7 +55,7 @@
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="@string/save"
                 android:textSize="13dp"
                 android:id="@+id/saveCheck"
                 android:enabled="false"
@@ -64,7 +64,7 @@
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Forward"
+                android:text="@string/follow"
                 android:textSize="13dp"
                 android:id="@+id/forwardCheck"
                 android:enabled="false"
@@ -73,7 +73,7 @@
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Print"
+                android:text="@string/print"
                 android:textSize="13dp"
                 android:id="@+id/printCheck"
                 android:enabled="false"

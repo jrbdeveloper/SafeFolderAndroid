@@ -7,4 +7,8 @@
     <string name="send_via">Send Via</string>
     <string name="encrypt">Encrypt</string>
     <string name="plus">+</string>
+    <string name="copy">Copy</string>
+    <string name="save">Save</string>
+    <string name="follow">Follow</string>
+    <string name="print">Print</string>
 </resources>
