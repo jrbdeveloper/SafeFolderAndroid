@@ -37,6 +37,7 @@ public class Encrypt extends Activity {
         emailListViewAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailAddressArray);
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
+		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
         Button sendViaButton = (Button) findViewById(R.id.send_via);
         Button encryptButton = (Button)findViewById(R.id.encrypt);
 
@@ -61,6 +62,16 @@ public class Encrypt extends Activity {
 				emailListViewAdapter.notifyDataSetChanged();
             }
         });
+
+		removeEmailButton.setOnClickListener(new Button.OnClickListener(){
+			public void onClick(View v){
+				emailAddressArray.remove(emailListViewSelectedIndex[0]);
+				emailTextBox.setText(""); // Clear the textbox
+
+				emailListView.setAdapter(emailListViewAdapter);
+				emailListViewAdapter.notifyDataSetChanged();
+			}
+		});
 
         sendViaButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
