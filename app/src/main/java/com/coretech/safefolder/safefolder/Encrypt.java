@@ -1,11 +1,13 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
+import android.app.LauncherActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -27,25 +29,36 @@ public class Encrypt extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_encrypt);
 
-        final ListView emailListView = (ListView) findViewById(R.id.listView);
+		final TextView emailTextBox = (TextView) findViewById(R.id.editText);
         final ArrayList<String> emailAddressArray = new ArrayList<String>();
+		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
+		emailListView.setSelection(-1);
+
         emailListViewAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailAddressArray);
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
         Button sendViaButton = (Button) findViewById(R.id.send_via);
         Button encryptButton = (Button)findViewById(R.id.encrypt);
 
+		final int[] emailListViewSelectedIndex = new int[1];
+		emailListViewSelectedIndex[0] = -1;
+
         addEmailButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 //add email button click event.  Add email to list
-                TextView emailTextBox = (TextView) findViewById(R.id.editText);
                 String emailAddress = emailTextBox.getText().toString();
                 emailTextBox.setText(""); // Clear the textbox
 
                 // Take the text from the box and add it to the list view
-                emailAddressArray.add(emailAddress);
-                emailListView.setAdapter(emailListViewAdapter);
-                emailListViewAdapter.notifyDataSetChanged();
+                if(emailListViewSelectedIndex[0] < 0){
+					emailAddressArray.add(emailAddress);
+				}else{
+					emailAddressArray.set(emailListViewSelectedIndex[0], emailAddress);
+					emailListViewSelectedIndex[0] = -1;
+				}
+
+				emailListView.setAdapter(emailListViewAdapter);
+				emailListViewAdapter.notifyDataSetChanged();
             }
         });
 
@@ -70,6 +83,14 @@ public class Encrypt extends Activity {
                 Close();
             }
         });
+
+		emailListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				String selectedText = parent.getItemAtPosition(position).toString();
+				emailTextBox.setText(selectedText);
+				emailListViewSelectedIndex[0] = position;
+			}
+		});
     }
 
     /**

@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/SafeFolder.iml" filepath="$PROJECT_DIR$/app/SafeFolder.iml" />
       <module fileurl="file://$PROJECT_DIR$/SafeFolderAndriod.iml" filepath="$PROJECT_DIR$/SafeFolderAndriod.iml" />
       <module fileurl="file://$PROJECT_DIR$/SafeFolderAndroid.iml" filepath="$PROJECT_DIR$/SafeFolderAndroid.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>

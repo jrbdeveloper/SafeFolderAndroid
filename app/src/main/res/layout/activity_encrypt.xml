@@ -32,64 +32,24 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/plus"
+                android:text="+"
                 android:id="@+id/add_email"
                 android:layout_gravity="right"
                 android:layout_toRightOf="@+id/editText"/>
         </RelativeLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
 
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/copy"
-                android:textSize="13dp"
-                android:id="@+id/copyCheck"
-                android:enabled="false"
-                android:layout_weight="1"/>
 
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:textSize="13dp"
-                android:id="@+id/saveCheck"
-                android:enabled="false"
-                android:layout_weight="1"/>
-
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/follow"
-                android:textSize="13dp"
-                android:id="@+id/forwardCheck"
-                android:enabled="false"
-                android:layout_weight="1"/>
-
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/print"
-                android:textSize="13dp"
-                android:id="@+id/printCheck"
-                android:enabled="false"
-                android:layout_weight="1"/>
-            </LinearLayout>
-
-            <ListView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/listView"
-            android:layout_alignTop="@+id/linearLayout"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="left"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="50dp" />
-
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/emailListView"
+        android:layout_alignTop="@+id/linearLayout"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="50dp"
+        android:clickable="true"
+        android:choiceMode="singleChoice"/>
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
@@ -106,9 +66,8 @@
                 android:layout_height="wrap_content"
                 android:text="@+string/encrypt"
                 android:layout_toRightOf="@id/send_via"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"/>
-        </RelativeLayout>
+                android:layout_alignParentBottom="true"/>
+            </RelativeLayout>
 </LinearLayout>
 
 </RelativeLayout>
