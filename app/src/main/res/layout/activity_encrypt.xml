@@ -2,12 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".Encrypt">
-
 
     <LinearLayout
         android:orientation="vertical"
@@ -20,19 +15,21 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="82dp">
+
             <EditText
                 android:layout_width="232dp"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:ems="10"
                 android:id="@+id/editText"
-                android:text="jrbdeveloper@gmail.com"/>
+                android:text="@string/fieldHint"/>
+
             <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+"
+                android:text="@string/plus"
                 android:id="@+id/add_email"
                 android:layout_gravity="right"
                 android:layout_toRightOf="@+id/editText"/>
@@ -41,50 +38,54 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-"
+                android:text="@string/minus"
                 android:id="@+id/remove_email"
                 android:layout_toRightOf="@+id/add_email"/>
         </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Copy"
-                android:textSize="13dp"
+                android:text="@string/copy"
+                android:textSize="13sp"
                 android:id="@+id/copyCheck"
                 android:enabled="false"
+                android:checked="true"
                 android:layout_weight="1"/>
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save"
-                android:textSize="13dp"
+                android:text="@string/save"
+                android:textSize="13sp"
                 android:id="@+id/saveCheck"
                 android:enabled="false"
+                android:checked="true"
                 android:layout_weight="1" />
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Forward"
-                android:textSize="13dp"
+                android:text="@string/forward"
+                android:textSize="13sp"
                 android:id="@+id/forwardCheck"
                 android:enabled="false"
+                android:checked="true"
                 android:layout_weight="1"/>
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Print"
-                android:textSize="13dp"
+                android:text="@string/print"
+                android:textSize="13sp"
                 android:id="@+id/printCheck"
                 android:enabled="false"
+                android:checked="true"
                 android:layout_weight="1"/>
         </LinearLayout>
 
@@ -103,13 +104,14 @@
                 android:id="@+id/send_via"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@+string/send_via"
+                android:text="@string/send_via"
                 android:layout_alignParentBottom="true"/>
+
             <Button
                 android:id="@+id/encrypt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@+string/encrypt"
+                android:text="@string/encrypt"
                 android:layout_toRightOf="@id/send_via"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"/>

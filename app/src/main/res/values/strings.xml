@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">SafeFolder</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="send_via">Send Via</string>
     <string name="encrypt">Encrypt</string>
     <string name="plus">+</string>
+    <string name="minus">-</string>
     <string name="copy">Copy</string>
     <string name="save">Save</string>
-    <string name="follow">Follow</string>
+    <string name="forward">Forward</string>
     <string name="print">Print</string>
+    <string name="fieldHint">jrbdeveloper@gmail.com</string>
 </resources>

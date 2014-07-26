@@ -1,9 +1,11 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
-import android.app.LauncherActivity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 
 public class Encrypt extends Activity {
@@ -46,9 +50,8 @@ public class Encrypt extends Activity {
 
         addEmailButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                //add email button click event.  Add email to list
                 String emailAddress = emailTextBox.getText().toString();
-                emailTextBox.setText(""); // Clear the textbox
+				emailTextBox.setText(""); // Clear the textbox
 
                 // Take the text from the box and add it to the list view
                 if(emailListViewSelectedIndex[0] < 0){
@@ -58,18 +61,21 @@ public class Encrypt extends Activity {
 					emailListViewSelectedIndex[0] = -1;
 				}
 
-				emailListView.setAdapter(emailListViewAdapter);
-				emailListViewAdapter.notifyDataSetChanged();
+				Bind(emailListView);
             }
         });
 
 		removeEmailButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				emailAddressArray.remove(emailListViewSelectedIndex[0]);
-				emailTextBox.setText(""); // Clear the textbox
+				if(emailListViewSelectedIndex[0] > -1) {
+					emailAddressArray.remove(emailListViewSelectedIndex[0]);
+					emailListViewSelectedIndex[0] = -1;
+					emailTextBox.setText(""); // Clear the textbox
 
-				emailListView.setAdapter(emailListViewAdapter);
-				emailListViewAdapter.notifyDataSetChanged();
+					Bind(emailListView);
+				}else {
+					Toast.makeText(getApplicationContext(), "No items selected", Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 
@@ -104,7 +110,16 @@ public class Encrypt extends Activity {
 		});
     }
 
-    /**
+	/**
+	 * Method that binds the array adapter to the list view control
+	 * @param emailListView
+	 */
+	private void Bind(ListView emailListView) {
+		emailListView.setAdapter(emailListViewAdapter);
+		emailListViewAdapter.notifyDataSetChanged();
+	}
+
+	/**
      * Called after onCreate() and before onResume()
      */
     @Override
