@@ -1,7 +1,6 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +23,12 @@ import java.util.List;
  */
 public class EncryptService {
 
-	String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
-	String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
+   String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
+    String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
 
-    public String EncryptFiles(Context appContext, ArrayList<String> fileList, ArrayList<String> emailList){
+    public String EncryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
 
-        AndroidAccountContextFactory factory = new AndroidAccountContextFactory(appContext);
+        AndroidAccountContextFactory factory = new AndroidAccountContextFactory(mainActivity.getApplicationContext());
         AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 
         LoginTask task = new LoginTask(context);
@@ -38,35 +36,6 @@ public class EncryptService {
 
         return "";
     }
-
-	public EncrypticsResponseCode DecryptFiles(Context appContext, ArrayList<String> fileList){
-		AccountContext context = new AndroidAccountContextFactory(appContext).generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
-		EncrypticsResponseCode loginCode = context.login();
-		EncrypticsResponseCode decryptResponseCode = EncrypticsResponseCode.UNKNOWN;
-
-		if(EncrypticsResponseCode.SUCCESS == loginCode) {
-
-			try{
-				for(String item : fileList){
-					File file = new File(item);
-					FileInputStream fis = new FileInputStream(file);
-					byte fileContent[] = new byte[(int)file.length()];
-
-					// Reads up to certain bytes of data from this input stream into an array of bytes.
-					fis.read(fileContent);
-
-					SafeFile safeFile = SafeFile.createSafeFile(ByteBuffer.wrap(fileContent)); // As previously presented
-					decryptResponseCode = safeFile.decrypt(context);
-				}
-			}catch(Exception ex){
-				//throw ex;
-				//TODO handle this error
-				String x = ex.getMessage();
-			}
-		}
-
-		return decryptResponseCode;
-	}
 
     private static class LoginTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode> {
 

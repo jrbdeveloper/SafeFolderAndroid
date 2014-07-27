@@ -24,10 +24,6 @@ public class Encrypt extends Activity {
     ArrayAdapter<String> emailListViewAdapter;
     private final static String TAG = "TestActivity";
 
-	EmailService _emailService = new EmailService();
-	FileService _fileService = new FileService();
-	EncryptService _encryptService = new EncryptService();
-
     /**
      * First to be called when the Activity starts; only called once
      * @param savedInstanceState
@@ -78,22 +74,29 @@ public class Encrypt extends Activity {
 
 					Bind(emailListView);
 				}else {
-					Toast.makeText(getApplicationContext(), "No items selected", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), "Please select an item to remove.", Toast.LENGTH_LONG).show();
 				}
 			}
 		});
 
         sendViaButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                String response = _encryptService.EncryptFiles(getApplicationContext(), _fileService.GetFileList(Encrypt.this), emailAddressArray);
-                _emailService.Send(Encrypt.this, _fileService.GetFileList(Encrypt.this), emailAddressArray);
+                EmailService emailService = new EmailService();
+                FileService fileService = new FileService();
+                EncryptService encryptService = new EncryptService();
+
+                String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
+                emailService.Send(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
                 Close();
             }
         });
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                String response = _encryptService.EncryptFiles(getApplicationContext(), _fileService.GetFileList(Encrypt.this), emailAddressArray);
+                FileService fileService = new FileService();
+                EncryptService encryptService = new EncryptService();
+
+                String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
                 Close();
             }
         });
@@ -116,12 +119,6 @@ public class Encrypt extends Activity {
 		emailListViewAdapter.notifyDataSetChanged();
 	}
 
-	private void Close(){
-		android.os.Process.killProcess(android.os.Process.myPid());
-		System.exit(1);
-	}
-
-	//region Lifecycle Events
 	/**
      * Called after onCreate() and before onResume()
      */
@@ -175,9 +172,12 @@ public class Encrypt extends Activity {
         super.onDestroy();
         Log.i(TAG, "On Destroy .....");
     }
-	//endregion
 
-	//region Menu Events
+    private void Close(){
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -196,5 +196,4 @@ public class Encrypt extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-	//endregion
 }
