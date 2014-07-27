@@ -1,6 +1,7 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,9 +28,9 @@ public class EncryptService {
 	String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
 	String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
 
-    public String EncryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
+    public String EncryptFiles(Context appContext, ArrayList<String> fileList, ArrayList<String> emailList){
 
-        AndroidAccountContextFactory factory = new AndroidAccountContextFactory(mainActivity.getApplicationContext());
+        AndroidAccountContextFactory factory = new AndroidAccountContextFactory(appContext);
         AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 
         LoginTask task = new LoginTask(context);
@@ -38,8 +39,8 @@ public class EncryptService {
         return "";
     }
 
-	public EncrypticsResponseCode DecryptFiles(Activity mainActivity, ArrayList<String> fileList){
-		AccountContext context = new AndroidAccountContextFactory(mainActivity.getApplicationContext()).generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+	public EncrypticsResponseCode DecryptFiles(Context appContext, ArrayList<String> fileList){
+		AccountContext context = new AndroidAccountContextFactory(appContext).generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 		EncrypticsResponseCode loginCode = context.login();
 		EncrypticsResponseCode decryptResponseCode = EncrypticsResponseCode.UNKNOWN;
 
