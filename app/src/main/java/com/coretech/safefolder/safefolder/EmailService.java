@@ -24,7 +24,8 @@ public class EmailService {
             intent.putExtra(Intent.EXTRA_EMAIL, new String[] { toAddress });
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             intent.putExtra(Intent.EXTRA_TEXT, body);
-            intent.setType("message/rfc822");
+            //intent.setType("message/rfc822");
+			intent.setType("*/*");
 
             ArrayList<Uri> uri = new ArrayList<Uri>();
             for (int i = 0; i < attachmentPath.size(); i++) {

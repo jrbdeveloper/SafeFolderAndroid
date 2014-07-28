@@ -87,7 +87,7 @@ public class Encrypt extends Activity {
 
                 String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
                 emailService.Send(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-                Close();
+                //Close();
             }
         });
 
@@ -97,7 +97,7 @@ public class Encrypt extends Activity {
                 EncryptService encryptService = new EncryptService();
 
                 String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-                Close();
+                //Close();
             }
         });
 
