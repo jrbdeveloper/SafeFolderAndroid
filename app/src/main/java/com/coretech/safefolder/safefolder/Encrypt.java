@@ -81,12 +81,17 @@ public class Encrypt extends Activity {
 
         sendViaButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                EmailService emailService = new EmailService();
-                FileService fileService = new FileService();
-                EncryptService encryptService = new EncryptService();
+                final EmailService emailService = new EmailService();
+                final FileService fileService = new FileService();
+                final EncryptService encryptService = new EncryptService();
+                encryptService.setOnFinishedListener(new EncryptService.OnFinishedListener() {
+                    @Override
+                    public void onFinished() {
 
-                String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-                emailService.Send(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
+                        emailService.Send(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
+                    }
+                });
+                encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
                 //Close();
             }
         });

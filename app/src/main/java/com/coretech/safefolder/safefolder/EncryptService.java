@@ -23,7 +23,13 @@ import java.util.List;
  */
 public class EncryptService {
 
-   String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
+    public interface OnFinishedListener {
+        public void onFinished();
+    }
+
+    private OnFinishedListener callback;
+
+    String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
     String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
 
     public String EncryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
@@ -31,18 +37,30 @@ public class EncryptService {
         AndroidAccountContextFactory factory = new AndroidAccountContextFactory(mainActivity.getApplicationContext());
         AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 
-        LoginTask task = new LoginTask(context);
+        LoginTask task = new LoginTask(this, context);
         task.execute(fileList, emailList);
 
         return "";
     }
 
+    public void setOnFinishedListener(OnFinishedListener listener) {
+        this.callback = listener;
+    }
+
+    public void onEncrypticsResponse(EncrypticsResponseCode code) {
+        //TODO may want to check the code here
+        callback.onFinished();
+    }
+
     private static class LoginTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode> {
 
         AccountContext context;
+        EncryptService callback;
 
-        public LoginTask(AccountContext context) {
+        public LoginTask(EncryptService service, AccountContext context) {
+            this.callback = service;
             this.context = context;
+
         }
 
         @Override
@@ -105,10 +123,11 @@ public class EncryptService {
 
         @Override
         protected void onPostExecute(EncrypticsResponseCode code) {
+
             if(EncrypticsResponseCode.SUCCESS == code) {
                 // It's a success!
                 Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
-
+                callback.onEncrypticsResponse(code);
             } else {
                 // TODO handle the encryptics exceptions here
                 Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
