@@ -3,18 +3,17 @@ package com.coretech.safefolder.safefolder;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.encrypticsforandroid.encrypticsforandroid.AndroidAccountContextFactory;
 import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 import com.encrypticslibrary.impl.AccountContext;
-import com.encrypticslibrary.impl.ContentBlob;
 import com.encrypticslibrary.impl.SafeFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,64 +22,93 @@ import java.util.List;
  */
 public class EncryptService {
 
-    public interface OnFinishedListener {
-        public void onFinished();
-    }
+	public interface OnFinishedListener {
+		public void onFinished();
+	}
 
-    private OnFinishedListener callback;
+	private OnFinishedListener callback;
 
-    String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
-    String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
+	String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
+	String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
 
-    public String EncryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
+	public String EncryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
 
-        AndroidAccountContextFactory factory = new AndroidAccountContextFactory(mainActivity.getApplicationContext());
-        AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(mainActivity.getApplicationContext());
+		AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 
-        LoginTask task = new LoginTask(this, context);
-        task.execute(fileList, emailList);
+		LoginTask task = new LoginTask(this, context);
+		task.execute(fileList, emailList);
 
-        return "";
-    }
+		return "";
+	}
 
-    public void setOnFinishedListener(OnFinishedListener listener) {
-        this.callback = listener;
-    }
+	public EncrypticsResponseCode DecryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
+		AccountContext context = new AndroidAccountContextFactory(mainActivity.getApplicationContext()).generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+		EncrypticsResponseCode loginCode = context.login();
+		EncrypticsResponseCode decryptResponseCode = EncrypticsResponseCode.UNKNOWN;
 
-    public void onEncrypticsResponse(EncrypticsResponseCode code) {
-        //TODO may want to check the code here
-        callback.onFinished();
-    }
+		if(EncrypticsResponseCode.SUCCESS == loginCode) {
 
-    private static class LoginTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode> {
+			try{
+				for(String item : fileList){
+					File file = new File(item);
+					FileInputStream fis = new FileInputStream(file);
+					byte fileContent[] = new byte[(int)file.length()];
 
-        AccountContext context;
-        EncryptService callback;
+					// Reads up to certain bytes of data from this input stream into an array of bytes.
+					fis.read(fileContent);
 
-        public LoginTask(EncryptService service, AccountContext context) {
-            this.callback = service;
-            this.context = context;
+					SafeFile safeFile = SafeFile.createSafeFile(ByteBuffer.wrap(fileContent)); // As previously presented
+					decryptResponseCode = safeFile.decrypt(context);
+				}
+			}catch(Exception ex){
+				//throw ex;
+				//TODO handle this error
+				String x = ex.getMessage();
+			}
+		}
 
-        }
+		return decryptResponseCode;
+	}
 
-        @Override
-        protected EncrypticsResponseCode doInBackground(List<String>... lists) {
+	public void setOnFinishedListener(OnFinishedListener listener) {
+		this.callback = listener;
+	}
 
-            List<String> fileList = lists[0];
-            List<String> recipientList = lists[1];
-            EncrypticsResponseCode codeToReturn = EncrypticsResponseCode.UNKNOWN;
+	public void onEncrypticsResponse(EncrypticsResponseCode code) {
+		//TODO may want to check the code here
+		callback.onFinished();
+	}
 
-            // Perform Encryptics Login. Looking for SUCCESS (10000)
-            codeToReturn = context.login();
+	private static class LoginTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode> {
 
-            //TODO How will you handle login failure?
-            if(EncrypticsResponseCode.SUCCESS != codeToReturn) {
-                // BUILDING .SAFE WILL NOT SUCCEED! Break.
-                return codeToReturn;
-            }
+		AccountContext context;
+		EncryptService callback;
 
-            try {
-                for(String item : fileList) {
+		public LoginTask(EncryptService service, AccountContext context) {
+			this.callback = service;
+			this.context = context;
+
+		}
+
+		@Override
+		protected EncrypticsResponseCode doInBackground(List<String>... lists) {
+
+			List<String> fileList = lists[0];
+			List<String> recipientList = lists[1];
+			EncrypticsResponseCode codeToReturn = EncrypticsResponseCode.UNKNOWN;
+
+			// Perform Encryptics Login. Looking for SUCCESS (10000)
+			codeToReturn = context.login();
+
+			//TODO How will you handle login failure?
+			if(EncrypticsResponseCode.SUCCESS != codeToReturn) {
+				// BUILDING .SAFE WILL NOT SUCCEED! Break.
+				return codeToReturn;
+			}
+
+			try {
+				for(String item : fileList) {
 					if(!item.contains(".safe")){
 						File file = new File(item);
 						FileInputStream fis = new FileInputStream(file);
@@ -110,28 +138,28 @@ public class EncryptService {
 						// would be best
 						codeToReturn = builder.build(context, outputStream);
 					}
-                }
-            }
-            catch(Exception ex){
-                //throw ex;
-                //TODO handle this error
+				}
+			}
+			catch(Exception ex){
+				//throw ex;
+				//TODO handle this error
 				String x = ex.getMessage();
-            }
+			}
 
-            return codeToReturn;
-        }
+			return codeToReturn;
+		}
 
-        @Override
-        protected void onPostExecute(EncrypticsResponseCode code) {
+		@Override
+		protected void onPostExecute(EncrypticsResponseCode code) {
 
-            if(EncrypticsResponseCode.SUCCESS == code) {
-                // It's a success!
-                Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
-                callback.onEncrypticsResponse(code);
-            } else {
-                // TODO handle the encryptics exceptions here
-                Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
-            }
-        }
-    }
+			if(EncrypticsResponseCode.SUCCESS == code) {
+				// It's a success!
+				Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
+				callback.onEncrypticsResponse(code);
+			} else {
+				// TODO handle the encryptics exceptions here
+				Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
+			}
+		}
+	}
 }

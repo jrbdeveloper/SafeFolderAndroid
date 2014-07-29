@@ -1,11 +1,8 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,11 +15,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class Encrypt extends Activity {
+public class EncryptActivity extends Activity {
 
-    String[] items = {};
     ArrayAdapter<String> emailListViewAdapter;
-    private final static String TAG = "TestActivity";
+	SafeFolder application = (SafeFolder) getApplicationContext();
 
     /**
      * First to be called when the Activity starts; only called once
@@ -38,7 +34,7 @@ public class Encrypt extends Activity {
 		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
 		emailListView.setSelection(-1);
 
-        emailListViewAdapter = new ArrayAdapter<String>(Encrypt.this, android.R.layout.simple_expandable_list_item_1,emailAddressArray);
+        emailListViewAdapter = new ArrayAdapter<String>(EncryptActivity.this, android.R.layout.simple_expandable_list_item_1,emailAddressArray);
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
 		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
@@ -79,30 +75,24 @@ public class Encrypt extends Activity {
 			}
 		});
 
-        sendViaButton.setOnClickListener(new Button.OnClickListener(){
-            public void onClick(View v){
-                final EmailService emailService = new EmailService();
-                final FileService fileService = new FileService();
-                final EncryptService encryptService = new EncryptService();
-                encryptService.setOnFinishedListener(new EncryptService.OnFinishedListener() {
-                    @Override
-                    public void onFinished() {
+		sendViaButton.setOnClickListener(new Button.OnClickListener(){
+			public void onClick(View v){
+				application.getEncryptService().EncryptFiles(EncryptActivity.this, application.getFileService().GetFileList(EncryptActivity.this), emailAddressArray);
 
-                        emailService.Send(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-                    }
-                });
-                encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-                //Close();
-            }
-        });
+				application.getEncryptService().setOnFinishedListener(new EncryptService.OnFinishedListener() {
+					@Override
+					public void onFinished() {
+
+						application.getEmailSerivce().Send(EncryptActivity.this, application.getFileService().GetFileList(EncryptActivity.this), emailAddressArray);
+					}
+				});
+				//Close();
+			}
+		});
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                FileService fileService = new FileService();
-                EncryptService encryptService = new EncryptService();
-
-                String response = encryptService.EncryptFiles(Encrypt.this, fileService.GetFileList(Encrypt.this), emailAddressArray);
-                //Close();
+			String response = application.getEncryptService().EncryptFiles(EncryptActivity.this, application.getFileService().GetFileList(EncryptActivity.this), emailAddressArray);
             }
         });
 
@@ -130,7 +120,8 @@ public class Encrypt extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(TAG, "On Start .....");
+        Log.i("Testing", "On Start .....");
+		//CheckForSafeFiles();
     }
 
     /**
@@ -139,7 +130,8 @@ public class Encrypt extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "On Resume .....");
+        Log.i("Testing", "On Resume .....");
+		//CheckForSafeFiles();
     }
 
     /**
@@ -148,7 +140,7 @@ public class Encrypt extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "On Pause .....");
+        Log.i("Testing", "On Pause .....");
     }
 
     /**
@@ -157,7 +149,7 @@ public class Encrypt extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "On Stop .....");
+        Log.i("Testing", "On Stop .....");
     }
 
     /**
@@ -166,7 +158,7 @@ public class Encrypt extends Activity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.i(TAG, "On Restart .....");
+        Log.i("Testing", "On Restart .....");
     }
 
     /**
@@ -175,7 +167,7 @@ public class Encrypt extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "On Destroy .....");
+        Log.i("Testing", "On Destroy .....");
     }
 
     private void Close(){

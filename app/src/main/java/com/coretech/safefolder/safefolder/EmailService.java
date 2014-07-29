@@ -38,7 +38,6 @@ public class EmailService {
             mainActivity.startActivity(Intent.createChooser(intent, "Choose an email application..."));
         } catch (Exception ex) {
             ex.printStackTrace();
-            //throw ex;
         }
     }
 }

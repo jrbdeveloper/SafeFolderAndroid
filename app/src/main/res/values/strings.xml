@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">SafeFolder</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -12,4 +13,7 @@
     <string name="forward">Forward</string>
     <string name="print">Print</string>
     <string name="fieldHint">jrbdeveloper@gmail.com</string>
+    <string name="title_activity_decrypt">DecryptActivity</string>
+    <string name="title_activity_launch">LaunchActivity</string>
+
 </resources>
