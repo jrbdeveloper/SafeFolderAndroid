@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +28,26 @@ public class LaunchActivity extends Activity {
 
 		CheckForSafeFiles();
     }
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		// Once file(s) have been selected this will be called again. This is where we need to take the user to SafeFolder now.
+		ArrayList<String> fileList = safeFolder.getFileService().GetFileList(LaunchActivity.this);
+		if(fileList.size() > 0){
+			ShowEncryptActivity();
+		}
+
+		Toast.makeText(LaunchActivity.this, "On Start",  Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	protected void onResume(){
+		super.onResume();
+
+		Toast.makeText(LaunchActivity.this, "On Resume",  Toast.LENGTH_LONG).show();
+	}
 
 	private void ShowEncryptActivity(){
 		Intent showEncrypt = new Intent(this, EncryptActivity.class);
