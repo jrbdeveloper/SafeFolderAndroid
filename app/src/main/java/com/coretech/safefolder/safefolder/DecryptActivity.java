@@ -4,11 +4,18 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.coretech.safefolder.safefolder.R;
 
 public class DecryptActivity extends Activity {
 
-	SafeFolder application = (SafeFolder) getApplicationContext();
+	//region Private Members
+	private SafeFolder _application;
+	//endregion
+
+	//region Constructor
+	public DecryptActivity(){
+		_application = new SafeFolder(this);
+	}
+	//endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

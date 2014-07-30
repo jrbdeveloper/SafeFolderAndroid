@@ -12,6 +12,16 @@ import java.util.ArrayList;
  */
 public class EmailService {
 
+	//region Private Members
+	private SafeFolder _application;
+	//endregion
+
+	//region Constructor
+	public EmailService(SafeFolder application){
+		application = _application;
+	}
+	//endregion
+
     public void Send(Activity mainActivity, ArrayList encryptedFileList, ArrayList emailList){
         String toAddress = TextUtils.join(",", emailList);
         String subject = "";

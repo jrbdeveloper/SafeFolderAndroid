@@ -1,16 +1,41 @@
 package com.coretech.safefolder.safefolder;
 
+import android.app.Activity;
 import android.app.Application;
+import java.util.ArrayList;
 
 /**
  * Created by john bales on 7/28/2014.
  */
 public class SafeFolder extends Application {
 
+	//region Private Members
 	private String _appState;
-	private FileService _fileService = new FileService();
-	private EmailService _emailService = new EmailService();
-	private EncryptService _encryptService = new EncryptService();
+	private Activity _currentActivity;
+	//endregion
+
+	//region Public Members
+	public ArrayList<String> FileList;
+	//endregion
+
+	//region Constructor
+	public SafeFolder(Activity activity){
+		FileList = new ArrayList<String>();
+
+		setCurrentActivity(activity);
+	}
+
+	public SafeFolder(){}
+	//endregion
+
+	//region Getters & Setters
+	public void setCurrentActivity(Activity activity){
+		_currentActivity = activity;
+	}
+
+	public Activity getCurrentActivity(){
+		return _currentActivity;
+	}
 
 	public String getState(){
 		return _appState;
@@ -21,10 +46,11 @@ public class SafeFolder extends Application {
 	}
 
 	public FileService getFileService(){
-		return _fileService;
+		return new FileService(this);
 	}
 
-	public EmailService getEmailSerivce(){ return _emailService; }
+	public EmailService getEmailSerivce(){ return new EmailService(this); }
 
-	public EncryptService getEncryptService(){ return _encryptService; }
+	public EncryptService getEncryptService(){ return new EncryptService(this); }
+	//endregion
 }

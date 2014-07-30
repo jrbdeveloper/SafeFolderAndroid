@@ -17,8 +17,16 @@ import java.util.ArrayList;
 
 public class EncryptActivity extends Activity {
 
-    ArrayAdapter<String> emailListViewAdapter;
-	SafeFolder application = (SafeFolder) getApplicationContext();
+	//region Private members
+    private ArrayAdapter<String> _emailListViewAdapter;
+	private SafeFolder _application;
+	//endregion
+
+	//region Constructor
+	public EncryptActivity(){
+		_application = new SafeFolder(this);
+	}
+	//endregion
 
     /**
      * First to be called when the Activity starts; only called once
@@ -34,7 +42,7 @@ public class EncryptActivity extends Activity {
 		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
 		emailListView.setSelection(-1);
 
-        emailListViewAdapter = new ArrayAdapter<String>(EncryptActivity.this, android.R.layout.simple_expandable_list_item_1,emailAddressArray);
+		_emailListViewAdapter = new ArrayAdapter<String>(_application.getCurrentActivity(), android.R.layout.simple_expandable_list_item_1,emailAddressArray);
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
 		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
@@ -70,20 +78,20 @@ public class EncryptActivity extends Activity {
 
 					Bind(emailListView);
 				}else {
-					Toast.makeText(getApplicationContext(), "Please select an item to remove.", Toast.LENGTH_LONG).show();
+					Toast.makeText(_application.getApplicationContext(), "Please select an item to remove.", Toast.LENGTH_LONG).show();
 				}
 			}
 		});
 
 		sendViaButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				application.getEncryptService().EncryptFiles(EncryptActivity.this, application.getFileService().GetFileList(EncryptActivity.this), emailAddressArray);
+				_application.getEncryptService().EncryptFiles(_application.getFileService().GetFileList(), emailAddressArray);
 
-				application.getEncryptService().setOnFinishedListener(new EncryptService.OnFinishedListener() {
+				_application.getEncryptService().setOnFinishedListener(new EncryptService.OnFinishedListener() {
 					@Override
 					public void onFinished() {
 
-						application.getEmailSerivce().Send(EncryptActivity.this, application.getFileService().GetFileList(EncryptActivity.this), emailAddressArray);
+						_application.getEmailSerivce().Send(_application.getCurrentActivity(), _application.getFileService().GetFileList(), emailAddressArray);
 					}
 				});
 				//Close();
@@ -92,7 +100,7 @@ public class EncryptActivity extends Activity {
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-			String response = application.getEncryptService().EncryptFiles(EncryptActivity.this, application.getFileService().GetFileList(EncryptActivity.this), emailAddressArray);
+			String response = _application.getEncryptService().EncryptFiles(_application.getFileService().GetFileList(), emailAddressArray);
             }
         });
 
@@ -110,8 +118,8 @@ public class EncryptActivity extends Activity {
 	 * @param emailListView
 	 */
 	private void Bind(ListView emailListView) {
-		emailListView.setAdapter(emailListViewAdapter);
-		emailListViewAdapter.notifyDataSetChanged();
+		emailListView.setAdapter(_emailListViewAdapter);
+		_emailListViewAdapter.notifyDataSetChanged();
 	}
 
 	/**
@@ -134,42 +142,9 @@ public class EncryptActivity extends Activity {
 		//CheckForSafeFiles();
     }
 
-    /**
-     * Called after the Activity is running and before onStop()
-     */
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i("Testing", "On Pause .....");
-    }
-
-    /**
-     * Called before onDestroy()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i("Testing", "On Stop .....");
-    }
-
-    /**
-     * Called as a result of onStop()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.i("Testing", "On Restart .....");
-    }
-
-    /**
-     * Called just before the activity is shut down
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i("Testing", "On Destroy .....");
-    }
-
+	/**
+	 * Method to be used to close the application
+	 */
     private void Close(){
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);

@@ -1,6 +1,5 @@
 package com.coretech.safefolder.safefolder;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -22,18 +21,29 @@ import java.util.List;
  */
 public class EncryptService {
 
+	//region Private Members
+	private SafeFolder _application;
+
+	private String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
+	private String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
+
+	private OnFinishedListener callback;
+	//endregion
+
+	//region Constructor
+	public EncryptService(SafeFolder application){
+		_application = application;
+	}
+	//endregion
+
 	public interface OnFinishedListener {
 		public void onFinished();
 	}
 
-	private OnFinishedListener callback;
+	public String EncryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
 
-	String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
-	String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
-
-	public String EncryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
-
-		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(mainActivity.getApplicationContext());
+		// TODO: remove the reference to _application and reference the singleton instance
+		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_application.getApplicationContext());
 		AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 
 		LoginTask task = new LoginTask(this, context);
@@ -42,8 +52,8 @@ public class EncryptService {
 		return "";
 	}
 
-	public EncrypticsResponseCode DecryptFiles(Activity mainActivity, ArrayList<String> fileList, ArrayList<String> emailList){
-		AccountContext context = new AndroidAccountContextFactory(mainActivity.getApplicationContext()).generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+	public EncrypticsResponseCode DecryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
+		AccountContext context = new AndroidAccountContextFactory(_application.getApplicationContext()).generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 		EncrypticsResponseCode loginCode = context.login();
 		EncrypticsResponseCode decryptResponseCode = EncrypticsResponseCode.UNKNOWN;
 

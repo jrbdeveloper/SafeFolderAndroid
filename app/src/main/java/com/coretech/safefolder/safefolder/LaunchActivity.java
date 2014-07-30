@@ -9,22 +9,27 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LaunchActivity extends Activity {
 
-	private SafeFolder safeFolder;
-	private Boolean haveSafeFiles = false;
+	//region Private Members
+	private SafeFolder _application;
+	//endregion
+
+	//region Constructor
+	public LaunchActivity(){
+		_application = new SafeFolder(this);
+	}
+	//endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
-
-		safeFolder = (SafeFolder) getApplicationContext();
 
 		CheckForSafeFiles();
     }
@@ -33,20 +38,14 @@ public class LaunchActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 
-		// Once file(s) have been selected this will be called again. This is where we need to take the user to SafeFolder now.
-		ArrayList<String> fileList = safeFolder.getFileService().GetFileList(LaunchActivity.this);
-		if(fileList.size() > 0){
-			ShowEncryptActivity();
+		if(_application.FileList.size() > 0){
+			CheckForSafeFiles();
 		}
-
-		Toast.makeText(LaunchActivity.this, "On Start",  Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	protected void onResume(){
 		super.onResume();
-
-		Toast.makeText(LaunchActivity.this, "On Resume",  Toast.LENGTH_LONG).show();
 	}
 
 	private void ShowEncryptActivity(){
@@ -59,6 +58,10 @@ public class LaunchActivity extends Activity {
 		startActivity(showDecrypt);
 	}
 
+	/**
+	 * Method to show the user a file manager for selecting files
+	 * Not used currently used - john bales 7/29/14
+	 */
 	private void ShowFileManager(){
 
 		Intent intent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
@@ -66,10 +69,12 @@ public class LaunchActivity extends Activity {
 		List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
 
 		if(activities.size() > 0){
+			//intent.setAction(Intent.ACTION_SEND_MULTIPLE);
 			intent.putExtra("CONTENT_TYPE", "*/*");
 			startActivityForResult(intent, 1);
 		}else{
 			intent = new Intent(Intent.ACTION_GET_CONTENT);
+			//intent.setAction(Intent.ACTION_SEND_MULTIPLE);
 			Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath());
 			intent.setDataAndType(uri, "*/*");
 			startActivity(Intent.createChooser(intent, "Open folder"));
@@ -96,10 +101,13 @@ public class LaunchActivity extends Activity {
     }
 
 	private void CheckForSafeFiles(){
-		int originalListSize = safeFolder.getFileService().GetFileList(LaunchActivity.this).size();
 		int count = 0;
+		FileService fileService = _application.getFileService();
+		_application.FileList = fileService.GetFileList();
+		int originalListSize = _application.FileList.size();
+
 		if(originalListSize > 0) {
-			for(String item : safeFolder.getFileService().GetFileList(LaunchActivity.this)){
+			for(String item : _application.FileList){
 				if(item.contains(".safe")){
 					count ++;
 				}
@@ -107,8 +115,9 @@ public class LaunchActivity extends Activity {
 		}
 
 		if(originalListSize == 0){ // we have no files; show the file manager
-			ShowFileManager();
-		}else if(count == -1 && originalListSize > 0){ // We have files in the list but none are .safe files
+			//ShowFileManager();
+			this.setVisible(false);
+		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
 			ShowEncryptActivity();
 		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe
 			ShowDecryptActivity();
