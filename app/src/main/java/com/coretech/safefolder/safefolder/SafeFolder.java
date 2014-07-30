@@ -16,6 +16,7 @@ public class SafeFolder extends Application {
 
 	//region Public Members
 	public ArrayList<String> FileList;
+	public ArrayList<String> EmailList;
 	//endregion
 
 	//region Constructor
@@ -28,6 +29,10 @@ public class SafeFolder extends Application {
 
 		if(FileList == null){
 			FileList = new ArrayList<String>();
+		}
+
+		if(EmailList == null){
+			EmailList = new ArrayList<String>();
 		}
 	}
 
