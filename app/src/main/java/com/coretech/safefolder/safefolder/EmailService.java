@@ -18,7 +18,9 @@ public class EmailService {
 
 	//region Constructor
 	public EmailService(SafeFolder application){
-		application = _application;
+		if(_application == null){
+			_application = application;
+		}
 	}
 	//endregion
 

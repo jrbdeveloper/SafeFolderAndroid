@@ -22,17 +22,19 @@ import java.util.List;
 public class EncryptService {
 
 	//region Private Members
-	private SafeFolder _application;
-
+	private static SafeFolder _application;
 	private String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
 	private String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
 
 	private OnFinishedListener callback;
+	private static ArrayList<String> _emailArrayList;
 	//endregion
 
 	//region Constructor
 	public EncryptService(SafeFolder application){
-		_application = application;
+		if(_application == null) {
+			_application = application;
+		}
 	}
 	//endregion
 
@@ -42,7 +44,8 @@ public class EncryptService {
 
 	public String EncryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
 
-		// TODO: remove the reference to _application and reference the singleton instance
+		_emailArrayList = emailList;
+
 		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_application.getApplicationContext());
 		AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 
@@ -98,7 +101,6 @@ public class EncryptService {
 		public LoginTask(EncryptService service, AccountContext context) {
 			this.callback = service;
 			this.context = context;
-
 		}
 
 		@Override
@@ -165,11 +167,16 @@ public class EncryptService {
 			if(EncrypticsResponseCode.SUCCESS == code) {
 				// It's a success!
 				Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
-				callback.onEncrypticsResponse(code);
+				//callback.onEncrypticsResponse(code);
+
+				_application.EmailSerivce().Send(_application.getCurrentActivity(), _application.FileService().GetFileList(), _emailArrayList);
+
 			} else {
 				// TODO handle the encryptics exceptions here
 				Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
 			}
+
+			_application.Close();
 		}
 	}
 }

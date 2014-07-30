@@ -24,7 +24,10 @@ public class EncryptActivity extends Activity {
 
 	//region Constructor
 	public EncryptActivity(){
-		_application = new SafeFolder(this);
+		if(_application == null){
+			_application = SafeFolder.getInstance();
+			_application.setCurrentActivity(this);
+		}
 	}
 	//endregion
 
@@ -85,22 +88,20 @@ public class EncryptActivity extends Activity {
 
 		sendViaButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				_application.getEncryptService().EncryptFiles(_application.getFileService().GetFileList(), emailAddressArray);
-
-				_application.getEncryptService().setOnFinishedListener(new EncryptService.OnFinishedListener() {
+				/*_application.EncryptService().setOnFinishedListener(new EncryptService.OnFinishedListener() {
 					@Override
 					public void onFinished() {
-
-						_application.getEmailSerivce().Send(_application.getCurrentActivity(), _application.getFileService().GetFileList(), emailAddressArray);
+						_application.EmailSerivce().Send(_application.getCurrentActivity(), _application.FileService().GetFileList(), emailAddressArray);
 					}
-				});
-				//Close();
+				});*/
+
+				_application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), emailAddressArray);
 			}
 		});
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-			String response = _application.getEncryptService().EncryptFiles(_application.getFileService().GetFileList(), emailAddressArray);
+			String response = _application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), emailAddressArray);
             }
         });
 
@@ -140,14 +141,6 @@ public class EncryptActivity extends Activity {
         super.onResume();
         Log.i("Testing", "On Resume .....");
 		//CheckForSafeFiles();
-    }
-
-	/**
-	 * Method to be used to close the application
-	 */
-    private void Close(){
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);
     }
 
     @Override

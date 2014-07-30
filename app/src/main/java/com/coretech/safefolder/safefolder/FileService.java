@@ -16,7 +16,9 @@ public class FileService {
 
 	//region Constructor
 	public FileService(SafeFolder application){
-		_application = application;
+		if(_application == null) {
+			_application = application;
+		}
 	}
 	//endregion
 
@@ -34,7 +36,9 @@ public class FileService {
             String outputfilename = getFileNameFromPath(inputfilename);
 
             //mws delete the toast and encrypt here
-			_application.FileList.add(inputfilename);
+			if(!_application.FileList.contains(inputfilename)){
+				_application.FileList.add(inputfilename);
+			}
 
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(theAction) && theIntent.hasExtra(Intent.EXTRA_STREAM)) {
 
@@ -48,7 +52,9 @@ public class FileService {
                 String outputfilename = getFileNameFromPath(inputfilename);
 
                 //mws delete the toast and encrypt here
-				_application.FileList.add(inputfilename);
+				if(!_application.FileList.contains(inputfilename)){
+					_application.FileList.add(inputfilename);
+				}
             }
         }
 

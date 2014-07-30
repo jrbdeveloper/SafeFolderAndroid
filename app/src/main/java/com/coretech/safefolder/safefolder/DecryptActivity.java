@@ -13,7 +13,10 @@ public class DecryptActivity extends Activity {
 
 	//region Constructor
 	public DecryptActivity(){
-		_application = new SafeFolder(this);
+		if(_application == null){
+			_application = SafeFolder.getInstance();
+			_application.setCurrentActivity(this);
+		}
 	}
 	//endregion
 

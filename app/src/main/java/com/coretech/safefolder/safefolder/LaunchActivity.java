@@ -22,7 +22,10 @@ public class LaunchActivity extends Activity {
 
 	//region Constructor
 	public LaunchActivity(){
-		_application = new SafeFolder(this);
+		if(_application == null){
+			_application = SafeFolder.getInstance();
+			_application.setCurrentActivity(this);
+		}
 	}
 	//endregion
 
@@ -102,7 +105,7 @@ public class LaunchActivity extends Activity {
 
 	private void CheckForSafeFiles(){
 		int count = 0;
-		FileService fileService = _application.getFileService();
+		FileService fileService = _application.FileService();
 		_application.FileList = fileService.GetFileList();
 		int originalListSize = _application.FileList.size();
 
@@ -116,7 +119,7 @@ public class LaunchActivity extends Activity {
 
 		if(originalListSize == 0){ // we have no files; show the file manager
 			//ShowFileManager();
-			this.setVisible(false);
+			_application.Close();
 		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
 			ShowEncryptActivity();
 		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe

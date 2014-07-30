@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class SafeFolder extends Application {
 
 	//region Private Members
-	private String _appState;
+	private static SafeFolder _instance;
 	private Activity _currentActivity;
 	//endregion
 
@@ -19,38 +19,43 @@ public class SafeFolder extends Application {
 	//endregion
 
 	//region Constructor
-	public SafeFolder(Activity activity){
-		FileList = new ArrayList<String>();
+	//endregion
 
-		setCurrentActivity(activity);
+	//region Events
+	public void onCreate(){
+		super.onCreate();
+		_instance = this;
+
+		if(FileList == null){
+			FileList = new ArrayList<String>();
+		}
 	}
 
-	public SafeFolder(){}
+	public void Close(){
+		android.os.Process.killProcess(android.os.Process.myPid());
+		System.exit(1);
+	}
 	//endregion
 
 	//region Getters & Setters
+	public static SafeFolder getInstance(){
+		return _instance;
+	}
+
 	public void setCurrentActivity(Activity activity){
-		_currentActivity = activity;
+		if(activity != null){
+			_currentActivity = activity;
+		}
 	}
 
 	public Activity getCurrentActivity(){
 		return _currentActivity;
 	}
 
-	public String getState(){
-		return _appState;
-	}
+	public FileService FileService(){ return new FileService(_instance); }
 
-	public void setState(String state){
-		_appState = state;
-	}
+	public EmailService EmailSerivce(){ return new EmailService(_instance); }
 
-	public FileService getFileService(){
-		return new FileService(this);
-	}
-
-	public EmailService getEmailSerivce(){ return new EmailService(this); }
-
-	public EncryptService getEncryptService(){ return new EncryptService(this); }
+	public EncryptService EncryptService(){ return new EncryptService(_instance); }
 	//endregion
 }
