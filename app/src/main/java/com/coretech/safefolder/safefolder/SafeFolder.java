@@ -1,7 +1,10 @@
 package com.coretech.safefolder.safefolder;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
+
 import java.util.ArrayList;
 
 /**
@@ -36,14 +39,19 @@ public class SafeFolder extends Application {
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void Close(){
-		/*android.os.Process.killProcess(android.os.Process.myPid());
-		System.exit(0);
-		_currentActivity.setVisible(false);*/
 
-		getCurrentActivity().setResult(Activity.RESULT_OK, getCurrentActivity().getIntent());
-		getCurrentActivity().finish();
-		getCurrentActivity().setVisible(false);
+		FileList.clear();
+		EmailList.clear();
+
+		//getCurrentActivity().setResult(900);
+//		this.getCurrentActivity().finishActivity(900);
+//		getCurrentActivity().setResult(Activity.RESULT_OK, getCurrentActivity().getIntent());
+//		getCurrentActivity().finish();
+//		getCurrentActivity().setVisible(false);
+
+		getCurrentActivity().finishAffinity();
 	}
 	//endregion
 

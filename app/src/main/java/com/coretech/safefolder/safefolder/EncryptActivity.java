@@ -100,7 +100,7 @@ public class EncryptActivity extends Activity {
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-			String response = _application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), _application.EmailList);
+			_application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), _application.EmailList);
             }
         });
 

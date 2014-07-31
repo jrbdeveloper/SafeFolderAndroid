@@ -152,8 +152,7 @@ public class EncryptService {
 				//Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
 			}
 
-			_application.getCurrentActivity().setResult(Activity.RESULT_OK, _application.getCurrentActivity().getIntent());
-			_application.getCurrentActivity().finish();
+			_application.Close();
 		}
 	}
 
@@ -234,9 +233,7 @@ public class EncryptService {
 				//Log.d("EncryptService", "Failed to login or decrypt .SAFE files: " + code);
 			}
 
-			_application.getCurrentActivity().setResult(Activity.RESULT_OK, _application.getCurrentActivity().getIntent());
-			_application.getCurrentActivity().finish();
-			_application.getCurrentActivity().setVisible(false);
+			_application.Close();
 		}
 
 		//public interface OnFinishedListener {

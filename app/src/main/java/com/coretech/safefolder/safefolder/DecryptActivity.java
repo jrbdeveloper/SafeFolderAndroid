@@ -56,9 +56,7 @@ public class DecryptActivity extends Activity {
 				_listArray.add(_application.FileService().getFileNameFromPath(item.toString()));
 			}
 		}else{
-			_application.getCurrentActivity().setResult(Activity.RESULT_OK, _application.getCurrentActivity().getIntent());
-			_application.getCurrentActivity().finish();
-			_application.getCurrentActivity().setVisible(false);
+			_application.Close();
 		}
 	}
 
