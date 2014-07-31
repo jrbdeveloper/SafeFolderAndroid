@@ -16,7 +16,8 @@
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/fileListView" />
+            android:id="@+id/fileListView"
+            style="@android:style/Widget.DeviceDefault.Light.ListView"/>
 
         <Button
             android:layout_width="wrap_content"

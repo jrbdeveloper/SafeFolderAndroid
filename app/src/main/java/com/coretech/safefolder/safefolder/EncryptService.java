@@ -1,5 +1,6 @@
 package com.coretech.safefolder.safefolder;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -141,17 +142,18 @@ public class EncryptService {
 		protected void onPostExecute(EncrypticsResponseCode code) {
 
 			if(EncrypticsResponseCode.SUCCESS == code) {
-				Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
+				//Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
 				//callback.onEncrypticsResponse(code);
 
 				_application.EmailSerivce().Send(_application.getCurrentActivity(), _application.FileService().GetFileList(), _emailArrayList);
 
 			} else {
 				// TODO handle the encryptics exceptions here
-				Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
+				//Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
 			}
 
-			_application.Close();
+			_application.getCurrentActivity().setResult(Activity.RESULT_OK, _application.getCurrentActivity().getIntent());
+			_application.getCurrentActivity().finish();
 		}
 	}
 
@@ -227,11 +229,14 @@ public class EncryptService {
 		@Override
 		protected void onPostExecute(EncrypticsResponseCode code){
 			if(EncrypticsResponseCode.SUCCESS == code){
-				Log.d("EncryptService", "Successfully logged in and decrypt .SAFE files.");
-				_application.Close();
+				//Log.d("EncryptService", "Successfully logged in and decrypt .SAFE files.");
 			}else{
-				Log.d("EncryptService", "Failed to login or decrypt .SAFE files: " + code);
+				//Log.d("EncryptService", "Failed to login or decrypt .SAFE files: " + code);
 			}
+
+			_application.getCurrentActivity().setResult(Activity.RESULT_OK, _application.getCurrentActivity().getIntent());
+			_application.getCurrentActivity().finish();
+			_application.getCurrentActivity().setVisible(false);
 		}
 
 		//public interface OnFinishedListener {

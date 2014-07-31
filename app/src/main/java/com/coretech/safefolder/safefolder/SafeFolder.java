@@ -37,8 +37,13 @@ public class SafeFolder extends Application {
 	}
 
 	public void Close(){
-		android.os.Process.killProcess(android.os.Process.myPid());
-		System.exit(1);
+		/*android.os.Process.killProcess(android.os.Process.myPid());
+		System.exit(0);
+		_currentActivity.setVisible(false);*/
+
+		getCurrentActivity().setResult(Activity.RESULT_OK, getCurrentActivity().getIntent());
+		getCurrentActivity().finish();
+		getCurrentActivity().setVisible(false);
 	}
 	//endregion
 

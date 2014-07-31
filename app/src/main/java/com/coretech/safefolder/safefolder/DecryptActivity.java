@@ -51,8 +51,14 @@ public class DecryptActivity extends Activity {
     }
 
 	private void addEncryptedFilesToList(){
-		for(String item : _application.FileList){
-			_listArray.add(item.toString());
+		if(_application.FileList.size() > 0){
+			for(String item : _application.FileList){
+				_listArray.add(_application.FileService().getFileNameFromPath(item.toString()));
+			}
+		}else{
+			_application.getCurrentActivity().setResult(Activity.RESULT_OK, _application.getCurrentActivity().getIntent());
+			_application.getCurrentActivity().finish();
+			_application.getCurrentActivity().setVisible(false);
 		}
 	}
 

@@ -63,7 +63,7 @@ public class FileService {
 	//endregion
 
 	//region Private Methods
-    private String getFileNameFromPath(String input) {
+    public String getFileNameFromPath(String input) {
         String[] temp;
         String delimeter = "/";
         temp = input.split(delimeter);
