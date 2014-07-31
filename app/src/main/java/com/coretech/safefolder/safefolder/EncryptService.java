@@ -6,11 +6,16 @@ import android.util.Log;
 import com.encrypticsforandroid.encrypticsforandroid.AndroidAccountContextFactory;
 import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 import com.encrypticslibrary.impl.AccountContext;
+import com.encrypticslibrary.impl.ContentBlob;
 import com.encrypticslibrary.impl.SafeFile;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -180,6 +185,30 @@ public class EncryptService {
 
 					SafeFile safeFile = SafeFile.createSafeFile(ByteBuffer.wrap(fileContent)); // As previously presented
 					codeToReturn = safeFile.decrypt(context);
+
+					if(codeToReturn == EncrypticsResponseCode.SUCCESS){
+						// need to construct a new file from the constructed safefile with an output stream
+						if(safeFile.isDecrypted()) {
+							InputStream userHeader = safeFile.getUserHeader();
+							//OutputStream outputStream = new FileOutputStream(item.substring(0,item.lastIndexOf('.')-1));
+
+							ByteArrayOutputStream bos = new ByteArrayOutputStream();
+							byte[] buf = new byte[1024];
+
+							for (int readNum; (readNum = userHeader.read(buf)) != -1;) {
+								bos.write(buf, 0, readNum); //no doubt here is 0
+								//Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
+								//System.out.println("read " + readNum + " bytes,");
+							}
+
+							byte[] bytes = bos.toByteArray();
+							File outPutFile = new File(item.substring(0,item.lastIndexOf('.')-1));
+							FileOutputStream fos = new FileOutputStream(outPutFile);
+							fos.write(bytes);
+							fos.flush();
+							fos.close();
+						}
+					}
 				}
 			}catch(Exception ex){
 				String x = ex.getMessage();
