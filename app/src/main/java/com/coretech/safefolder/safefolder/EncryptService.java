@@ -174,6 +174,8 @@ public class EncryptService {
 				return codeToReturn;
 			}
 
+			byte[] buf = new byte[1024];
+
 			try{
 				for(String item : fileList){
 					File file = new File(item);
@@ -190,10 +192,9 @@ public class EncryptService {
 						// need to construct a new file from the constructed safefile with an output stream
 						if(safeFile.isDecrypted()) {
 							InputStream userHeader = safeFile.getUserHeader();
-							//OutputStream outputStream = new FileOutputStream(item.substring(0,item.lastIndexOf('.')-1));
-
 							ByteArrayOutputStream bos = new ByteArrayOutputStream();
-							byte[] buf = new byte[1024];
+
+							userHeader.read(fileContent);
 
 							for (int readNum; (readNum = userHeader.read(buf)) != -1;) {
 								bos.write(buf, 0, readNum); //no doubt here is 0
@@ -202,7 +203,7 @@ public class EncryptService {
 							}
 
 							byte[] bytes = bos.toByteArray();
-							File outPutFile = new File(item.substring(0,item.lastIndexOf('.')-1));
+							File outPutFile = new File(item.substring(0,item.lastIndexOf('.')));
 							FileOutputStream fos = new FileOutputStream(outPutFile);
 							fos.write(bytes);
 							fos.flush();
