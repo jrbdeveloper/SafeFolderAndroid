@@ -55,8 +55,6 @@ public class DecryptActivity extends Activity {
 			for(String item : _application.FileList){
 				_listArray.add(_application.FileService().getFileNameFromPath(item.toString()));
 			}
-		}else{
-			_application.Close();
 		}
 	}
 

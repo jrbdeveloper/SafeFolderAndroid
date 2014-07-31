@@ -218,8 +218,8 @@ public class EncryptService {
 						}
 					}
 				}
-			}catch(Exception ex){
-				String x = ex.getMessage();
+			}catch(Exception exe){
+				exe.printStackTrace();
 			}
 
 			return codeToReturn;

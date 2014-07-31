@@ -45,12 +45,6 @@ public class SafeFolder extends Application {
 		FileList.clear();
 		EmailList.clear();
 
-		//getCurrentActivity().setResult(900);
-//		this.getCurrentActivity().finishActivity(900);
-//		getCurrentActivity().setResult(Activity.RESULT_OK, getCurrentActivity().getIntent());
-//		getCurrentActivity().finish();
-//		getCurrentActivity().setVisible(false);
-
 		getCurrentActivity().finishAffinity();
 	}
 	//endregion
