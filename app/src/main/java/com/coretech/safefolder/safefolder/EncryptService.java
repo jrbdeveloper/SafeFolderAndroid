@@ -9,11 +9,14 @@ import com.encrypticslibrary.impl.AccountContext;
 import com.encrypticslibrary.impl.ContentBlob;
 import com.encrypticslibrary.impl.SafeFile;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -174,8 +177,6 @@ public class EncryptService {
 				return codeToReturn;
 			}
 
-			byte[] buf = new byte[1024];
-
 			try{
 				for(String item : fileList){
 					File file = new File(item);
@@ -191,23 +192,28 @@ public class EncryptService {
 					if(codeToReturn == EncrypticsResponseCode.SUCCESS){
 						// need to construct a new file from the constructed safefile with an output stream
 						if(safeFile.isDecrypted()) {
-							InputStream userHeader = safeFile.getUserHeader();
-							ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-							userHeader.read(fileContent);
+							try{
+								String path = item.substring(0,item.lastIndexOf('.'));
+								com.encrypticslibrary.impl.ContentBlob blob = safeFile.getBlob(0);
+								InputStream inputStream = blob.getContent();
+								OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(path));
 
-							for (int readNum; (readNum = userHeader.read(buf)) != -1;) {
-								bos.write(buf, 0, readNum); //no doubt here is 0
-								//Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
-								//System.out.println("read " + readNum + " bytes,");
+								byte[] buffer = new byte[1024];
+								int len = 0;
+
+								while ((len = inputStream.read(buffer)) != -1) {
+									outputStream.write(buffer, 0, len);
+								}
+
+								if(outputStream != null){
+									outputStream.close();
+								}
+							}catch(IOException e){
+								e.printStackTrace();
+							}catch(NullPointerException ex){
+								ex.printStackTrace();
 							}
-
-							byte[] bytes = bos.toByteArray();
-							File outPutFile = new File(item.substring(0,item.lastIndexOf('.')));
-							FileOutputStream fos = new FileOutputStream(outPutFile);
-							fos.write(bytes);
-							fos.flush();
-							fos.close();
 						}
 					}
 				}

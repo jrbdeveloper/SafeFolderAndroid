@@ -41,11 +41,10 @@ public class EncryptActivity extends Activity {
         setContentView(R.layout.activity_encrypt);
 
 		final TextView emailTextBox = (TextView) findViewById(R.id.editText);
-        final ArrayList<String> emailAddressArray = new ArrayList<String>();
 		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
 		emailListView.setSelection(-1);
 
-		_emailListViewAdapter = new ArrayAdapter<String>(_application.getCurrentActivity(), android.R.layout.simple_expandable_list_item_1,emailAddressArray);
+		_emailListViewAdapter = new ArrayAdapter<String>(_application.getCurrentActivity(), android.R.layout.simple_expandable_list_item_1, _application.EmailList);
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
 		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
@@ -58,13 +57,13 @@ public class EncryptActivity extends Activity {
         addEmailButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 String emailAddress = emailTextBox.getText().toString();
-				emailTextBox.setText(""); // Clear the textbox
+				emailTextBox.setText("");
 
                 // Take the text from the box and add it to the list view
                 if(emailListViewSelectedIndex[0] < 0){
-					emailAddressArray.add(emailAddress);
+					_application.EmailList.add(emailAddress);
 				}else{
-					emailAddressArray.set(emailListViewSelectedIndex[0], emailAddress);
+					_application.EmailList.set(emailListViewSelectedIndex[0], emailAddress);
 					emailListViewSelectedIndex[0] = -1;
 				}
 
@@ -75,9 +74,9 @@ public class EncryptActivity extends Activity {
 		removeEmailButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
 				if(emailListViewSelectedIndex[0] > -1) {
-					emailAddressArray.remove(emailListViewSelectedIndex[0]);
+					_application.EmailList.remove(emailListViewSelectedIndex[0]);
 					emailListViewSelectedIndex[0] = -1;
-					emailTextBox.setText(""); // Clear the textbox
+					emailTextBox.setText("");
 
 					Bind(emailListView);
 				}else {
@@ -95,13 +94,13 @@ public class EncryptActivity extends Activity {
 					}
 				});*/
 
-				_application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), emailAddressArray);
+				_application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), _application.EmailList);
 			}
 		});
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-			String response = _application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), emailAddressArray);
+			String response = _application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), _application.EmailList);
             }
         });
 
