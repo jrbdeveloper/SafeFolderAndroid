@@ -15,7 +15,7 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="82dp">
+            android:layout_height="65dp">
 
             <EditText
                 android:layout_width="232dp"
@@ -23,6 +23,7 @@
                 android:inputType="textEmailAddress"
                 android:ems="10"
                 android:id="@+id/editText"
+                android:textSize="15dp"
                 android:text="@string/fieldHint"/>
 
             <Button
@@ -30,17 +31,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/plus"
+                android:textSize="15dp"
                 android:id="@+id/add_email"
                 android:layout_gravity="right"
-                android:layout_toRightOf="@+id/editText"/>
+                android:layout_toRightOf="@+id/editText"
+                android:background="@drawable/buttonshape"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="3dp"/>
 
             <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/minus"
+                android:textSize="15dp"
                 android:id="@+id/remove_email"
-                android:layout_toRightOf="@+id/add_email"/>
+                android:layout_toRightOf="@+id/add_email"
+                android:background="@drawable/buttonshape"
+                android:layout_marginTop="3dp"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -52,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/copy"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:id="@+id/copyCheck"
                 android:enabled="false"
                 android:checked="true"
@@ -62,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/save"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:id="@+id/saveCheck"
                 android:enabled="false"
                 android:checked="true"
@@ -72,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/forward"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:id="@+id/forwardCheck"
                 android:enabled="false"
                 android:checked="true"
@@ -82,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/print"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:id="@+id/printCheck"
                 android:enabled="false"
                 android:checked="true"
@@ -94,6 +102,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/emailListView"
             android:layout_gravity="left"
+            android:textSize="14dp"
             android:layout_marginTop="50dp" />
 
         <RelativeLayout
@@ -105,7 +114,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/send_via"
-                android:layout_alignParentBottom="true"/>
+                android:textSize="15dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/buttonshape"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"/>
 
             <Button
                 android:id="@+id/encrypt"
@@ -113,8 +126,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/encrypt"
                 android:layout_toRightOf="@id/send_via"
+                android:textSize="15dp"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/buttonshape"/>
         </RelativeLayout>
     </LinearLayout>
 
