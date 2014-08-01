@@ -51,7 +51,6 @@ public class FileService {
                 String inputfilename = uri.getPath();
                 String outputfilename = getFileNameFromPath(inputfilename);
 
-                //mws delete the toast and encrypt here
 				if(!_application.FileList.contains(inputfilename)){
 					_application.FileList.add(inputfilename);
 				}

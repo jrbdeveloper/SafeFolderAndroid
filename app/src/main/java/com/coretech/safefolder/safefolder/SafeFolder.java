@@ -15,6 +15,9 @@ public class SafeFolder extends Application {
 	//region Private Members
 	private static SafeFolder _instance;
 	private Activity _currentActivity;
+	private FileService _fileService;
+	private EmailService _emailService;
+	private EncryptService _encryptService;
 	//endregion
 
 	//region Public Members
@@ -64,10 +67,34 @@ public class SafeFolder extends Application {
 		return _currentActivity;
 	}
 
-	public FileService FileService(){ return new FileService(_instance); }
+	public FileService FileService(){
+		if(_fileService == null) {
+			_fileService = new FileService(_instance);
+		}
 
-	public EmailService EmailSerivce(){ return new EmailService(_instance); }
+		return _fileService;
+	}
 
-	public EncryptService EncryptService(){ return new EncryptService(_instance); }
+	public EmailService EmailSerivce(){
+		if(_emailService == null){
+			_emailService = new EmailService(_instance);
+		}
+
+		return _emailService;
+	}
+
+	public EncryptService EncryptService(){
+		if(_encryptService == null){
+			_encryptService = new EncryptService(_instance);
+		}
+
+		return _encryptService;
+	}
+	//endregion
+
+	//region Public Methods
+	public boolean hasFiles() {
+		return FileList.size() > 0;
+	}
 	//endregion
 }

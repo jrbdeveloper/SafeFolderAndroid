@@ -13,8 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 public class EncryptActivity extends Activity {
 
 	//region Private members
@@ -121,26 +119,6 @@ public class EncryptActivity extends Activity {
 		emailListView.setAdapter(_emailListViewAdapter);
 		_emailListViewAdapter.notifyDataSetChanged();
 	}
-
-	/**
-     * Called after onCreate() and before onResume()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i("Testing", "On Start .....");
-		//CheckForSafeFiles();
-    }
-
-    /**
-     * Called after onStart() as a result of onPause()
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i("Testing", "On Resume .....");
-		//CheckForSafeFiles();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

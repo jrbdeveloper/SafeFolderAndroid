@@ -9,9 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-
 import java.util.List;
 
 public class LaunchActivity extends Activity {
@@ -34,21 +32,41 @@ public class LaunchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
-		CheckForSafeFiles();
+		DetermineWhatToDo();
     }
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		if(_application.FileList.size() > 0){
-			CheckForSafeFiles();
+		if(_application.hasFiles()){
+			DetermineWhatToDo();
 		}
 	}
 
-	@Override
-	protected void onResume(){
-		super.onResume();
+	private void DetermineWhatToDo(){
+		int count = 0;
+		_application.FileList = _application.FileService().GetFileList();
+		int originalListSize = _application.FileList.size();
+
+		if(originalListSize > 0) {
+			for(String item : _application.FileList){
+				if(item.contains(".safe")){
+					count ++;
+				}
+			}
+		}
+
+		if(originalListSize == 0){ // we have no files; show the file manager
+			//ShowFileManager();
+			_application.Close();
+		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
+			ShowEncryptActivity();
+		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe
+			ShowDecryptActivity();
+		}else {
+			Toast.makeText(LaunchActivity.this, "You have mixed files...",  Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private void ShowEncryptActivity(){
@@ -103,29 +121,5 @@ public class LaunchActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-	private void CheckForSafeFiles(){
-		int count = 0;
-		FileService fileService = _application.FileService();
-		_application.FileList = fileService.GetFileList();
-		int originalListSize = _application.FileList.size();
 
-		if(originalListSize > 0) {
-			for(String item : _application.FileList){
-				if(item.contains(".safe")){
-					count ++;
-				}
-			}
-		}
-
-		if(originalListSize == 0){ // we have no files; show the file manager
-			//ShowFileManager();
-			_application.Close();
-		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
-			ShowEncryptActivity();
-		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe
-			ShowDecryptActivity();
-		}else {
-			Toast.makeText(LaunchActivity.this, "You have mixed files...",  Toast.LENGTH_LONG).show();
-		}
-	}
 }

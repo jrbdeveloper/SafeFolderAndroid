@@ -1,25 +1,17 @@
 package com.coretech.safefolder.safefolder;
 
-import android.app.Activity;
 import android.os.AsyncTask;
-import android.util.Log;
-
 import com.encrypticsforandroid.encrypticsforandroid.AndroidAccountContextFactory;
 import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 import com.encrypticslibrary.impl.AccountContext;
-import com.encrypticslibrary.impl.ContentBlob;
 import com.encrypticslibrary.impl.SafeFile;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -47,27 +39,22 @@ public class EncryptService {
 	}
 	//endregion
 
-	public String EncryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
-
+	public void EncryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
 		_emailArrayList = emailList;
-
-		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_application.getApplicationContext());
-		AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
-
-		EncryptTask task = new EncryptTask(this, context);
-		task.execute(fileList, emailList);
-
-		return "";
+		new EncryptTask(this, getAccountContext()).execute(fileList, emailList);
 	}
 
-	public String DecryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
+	public void DecryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
+		new DecryptTask(this, getAccountContext()).execute(fileList, emailList);
+	}
+
+	/**
+	 * Method to centralize creating an AccountContext object
+	 * @return AccountContext
+	 */
+	private AccountContext getAccountContext(){
 		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_application.getApplicationContext());
-		AccountContext context = factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
-
-		DecryptTask task = new DecryptTask(this, context);
-		task.execute(fileList, emailList);
-
-		return "";
+		return factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
 	}
 
 	private static class EncryptTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode> {
@@ -130,9 +117,8 @@ public class EncryptService {
 				}
 			}
 			catch(Exception ex){
-				//throw ex;
 				//TODO handle this error
-				String x = ex.getMessage();
+				ex.printStackTrace();
 			}
 
 			return codeToReturn;

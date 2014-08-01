@@ -9,8 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.encrypticslibrary.api.response.EncrypticsResponseCode;
-
 import java.util.ArrayList;
 
 public class DecryptActivity extends Activity {
@@ -45,7 +43,7 @@ public class DecryptActivity extends Activity {
 
 		decryptButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				String response = _application.EncryptService().DecryptFiles(_application.FileList, _application.EmailList);
+			_application.EncryptService().DecryptFiles(_application.FileList, _application.EmailList);
 			}
 		});
     }
