@@ -4,8 +4,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Build;
-
 import java.util.ArrayList;
+
+import com.coretech.safefolder.safefolder.services.AccountService;
+import com.coretech.safefolder.safefolder.services.EmailService;
+import com.coretech.safefolder.safefolder.services.EncryptService;
+import com.coretech.safefolder.safefolder.services.FileService;
 
 /**
  * Created by john bales on 7/28/2014.
@@ -18,6 +22,7 @@ public class SafeFolder extends Application {
 	private FileService _fileService;
 	private EmailService _emailService;
 	private EncryptService _encryptService;
+	private AccountService _accountService;
 	//endregion
 
 	//region Public Members
@@ -89,6 +94,14 @@ public class SafeFolder extends Application {
 		}
 
 		return _encryptService;
+	}
+
+	public AccountService AccountService(){
+		if(_accountService == null){
+			_accountService = new AccountService(_instance);
+		}
+
+		return _accountService;
 	}
 	//endregion
 

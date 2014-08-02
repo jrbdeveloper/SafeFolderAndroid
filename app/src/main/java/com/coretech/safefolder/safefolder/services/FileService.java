@@ -1,12 +1,15 @@
-package com.coretech.safefolder.safefolder;
+package com.coretech.safefolder.safefolder.services;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
+import com.coretech.safefolder.safefolder.SafeFolder;
+
 import java.util.ArrayList;
 
 /**
- * Created by jabe on 7/23/2014.
+ * Created by john bales on 7/23/2014.
  */
 public class FileService {
 

@@ -1,14 +1,15 @@
-package com.coretech.safefolder.safefolder;
+package com.coretech.safefolder.safefolder.services;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import com.coretech.safefolder.safefolder.SafeFolder;
 import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Created by John on 7/23/2014.
+ * Created by john bales on 7/23/2014.
  */
 public class EmailService {
 
@@ -24,6 +25,7 @@ public class EmailService {
 	}
 	//endregion
 
+	//region Public Methods
     public void Send(Activity mainActivity, ArrayList encryptedFileList, ArrayList emailList){
         String toAddress = TextUtils.join(",", emailList);
         String subject = "";
@@ -52,4 +54,5 @@ public class EmailService {
             ex.printStackTrace();
         }
     }
+	//endregion
 }

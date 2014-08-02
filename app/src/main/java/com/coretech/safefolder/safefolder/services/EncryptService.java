@@ -1,11 +1,10 @@
-package com.coretech.safefolder.safefolder;
+package com.coretech.safefolder.safefolder.services;
 
 import android.os.AsyncTask;
-import com.encrypticsforandroid.encrypticsforandroid.AndroidAccountContextFactory;
+import com.coretech.safefolder.safefolder.SafeFolder;
+import com.coretech.safefolder.safefolder.entities.User;
 import com.encrypticslibrary.api.response.EncrypticsResponseCode;
-import com.encrypticslibrary.impl.AccountContext;
 import com.encrypticslibrary.impl.SafeFile;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,8 +23,8 @@ public class EncryptService {
 
 	//region Private Members
 	private static SafeFolder _application;
-	private String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
-	private String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
+	private static String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
+	private static String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
 
 	//private OnFinishedListener callback;
 	private static ArrayList<String> _emailArrayList;
@@ -39,31 +38,17 @@ public class EncryptService {
 	}
 	//endregion
 
+	//region Encryption
 	public void EncryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
 		_emailArrayList = emailList;
-		new EncryptTask(this, getAccountContext()).execute(fileList, emailList);
-	}
-
-	public void DecryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
-		new DecryptTask(this, getAccountContext()).execute(fileList, emailList);
-	}
-
-	/**
-	 * Method to centralize creating an AccountContext object
-	 * @return AccountContext
-	 */
-	private AccountContext getAccountContext(){
-		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_application.getApplicationContext());
-		return factory.generateAccountContext(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+		new EncryptTask(this).execute(fileList, emailList);
 	}
 
 	private static class EncryptTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode> {
 
-		AccountContext context;
 		//EncryptService callback;
 
-		public EncryptTask(EncryptService service, AccountContext context) {
-			this.context = context;
+		public EncryptTask(EncryptService service) {
 			//this.callback = service;
 		}
 
@@ -72,56 +57,51 @@ public class EncryptService {
 
 			List<String> fileList = lists[0];
 			List<String> recipientList = lists[1];
-			EncrypticsResponseCode codeToReturn = EncrypticsResponseCode.UNKNOWN;
 
-			// Perform Encryptics Login. Looking for SUCCESS (10000)
-			codeToReturn = context.login();
+			// Authenticate the user
+			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
+			User user = new User(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+			loginResponseCode = _application.AccountService().AuthenticateUser(user);
 
-			//TODO How will you handle login failure?
-			if(EncrypticsResponseCode.SUCCESS != codeToReturn) {
-				// BUILDING .SAFE WILL NOT SUCCEED! Break.
-				return codeToReturn;
+			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
+				return loginResponseCode;
 			}
 
+			EncrypticsResponseCode encryptResponseCode = EncrypticsResponseCode.UNKNOWN;
+
 			try {
+
 				for(String item : fileList) {
 					if(!item.contains(".safe")){
 						File file = new File(item);
 						FileInputStream fis = new FileInputStream(file);
-
-						OutputStream outputStream = new FileOutputStream(item +".safe");
+						OutputStream outputStream = new FileOutputStream(item + ".safe");
 
 						SafeFile.Builder builder = new SafeFile.Builder();
 
-						// The SafeFileType is the type you will use to identify your company's .SAFE file
-						// from other .SAFE files that may be also named .SAFE
+						// The SafeFileType is the type you will use to identify your company's .SAFE file from other .SAFE files that may be also named .SAFE
 						builder.setSafeFileType("com.coretech.safefolder")//TODO accept or reject this name
-								// The SafeFileVersion is your company's version so you can
-								// better identify your own changes to the architecture of the .SAFE
+								// The SafeFileVersion is your company's version so you can better identify your own changes to the architecture of the .SAFE
 								.setSafeFileVersion("1.2.0")//TODO settle on a version number, probably 1.0 or similar
 										// Subject is required, but if you won't use it, it can be anything that's not an empty string
-										// However, it's one of a few identifying pieces of a .SAFE file prior to its decryption (the subject
-										// is never encrypted)
+										// However, it's one of a few identifying pieces of a .SAFE file prior to its decryption (the subject is never encrypted)
 								.setSubject("not used")
-										// Adding your content here!
-								.addContent(fis, (int)file.length());
+								.addContent(fis, (int)file.length()); // Adding your content here!
 
 						for(String recipient : recipientList) {
 							builder.addRecipient(recipient);
 						}
 
-						// Building the .SAFE file is another network operation, keeping it in the background
-						// would be best
-						codeToReturn = builder.build(context, outputStream);
+						// Building the .SAFE file is another network operation, keeping it in the background would be best
+						encryptResponseCode = builder.build(_application.AccountService().getAccountContext(), outputStream);
 					}
 				}
 			}
 			catch(Exception ex){
-				//TODO handle this error
 				ex.printStackTrace();
 			}
 
-			return codeToReturn;
+			return encryptResponseCode;
 		}
 
 		@Override
@@ -141,28 +121,33 @@ public class EncryptService {
 			_application.Close();
 		}
 	}
+	//endregion
+
+	//region Decryption
+	public void DecryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
+		new DecryptTask(this).execute(fileList, emailList);
+	}
 
 	private static class DecryptTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode>{
 
-		AccountContext context;
-
-		public DecryptTask(EncryptService service, AccountContext context){
-			this.context = context;
+		public DecryptTask(EncryptService service){
 		}
 
 		@Override
 		protected EncrypticsResponseCode doInBackground(List<String>... lists){
 			List<String> fileList = lists[0];
 			List<String> recipientList = lists[1];
-			EncrypticsResponseCode codeToReturn = EncrypticsResponseCode.UNKNOWN;
 
-			// Perform Encryptics Login. Looking for SUCCESS (10000)
-			codeToReturn = context.login();
+			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
+			User user = new User(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+			loginResponseCode = _application.AccountService().AuthenticateUser(user);
 
 			//TODO How will you handle login failure?
-			if(EncrypticsResponseCode.SUCCESS != codeToReturn) {
-				return codeToReturn;
+			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
+				return loginResponseCode;
 			}
+
+			EncrypticsResponseCode decryptResponseCode = EncrypticsResponseCode.UNKNOWN;
 
 			try{
 				for(String item : fileList){
@@ -174,9 +159,9 @@ public class EncryptService {
 					fis.read(fileContent);
 
 					SafeFile safeFile = SafeFile.createSafeFile(ByteBuffer.wrap(fileContent)); // As previously presented
-					codeToReturn = safeFile.decrypt(context);
+					decryptResponseCode = safeFile.decrypt(_application.AccountService().getAccountContext());
 
-					if(codeToReturn == EncrypticsResponseCode.SUCCESS){
+					if(decryptResponseCode == EncrypticsResponseCode.SUCCESS){
 						// need to construct a new file from the constructed safefile with an output stream
 						if(safeFile.isDecrypted()) {
 
@@ -208,7 +193,7 @@ public class EncryptService {
 				exe.printStackTrace();
 			}
 
-			return codeToReturn;
+			return decryptResponseCode;
 		}
 
 		@Override
@@ -235,4 +220,5 @@ public class EncryptService {
 		//	callback.onFinished();
 		//}
 	}
+	//endregion
 }

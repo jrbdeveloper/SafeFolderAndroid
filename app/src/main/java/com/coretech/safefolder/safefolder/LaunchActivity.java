@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 import java.util.List;
 
 public class LaunchActivity extends Activity {
@@ -120,6 +121,4 @@ public class LaunchActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }
