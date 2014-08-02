@@ -23,8 +23,6 @@ public class EncryptService {
 
 	//region Private Members
 	private static SafeFolder _application;
-	private static String ENCRYPTICS_ACCOUNT_USERNAME = "michael.sneen@gmail.com";
-	private static String ENCRYPTICS_ACCOUNT_PASSWORD = "password";
 
 	//private OnFinishedListener callback;
 	private static ArrayList<String> _emailArrayList;
@@ -60,7 +58,7 @@ public class EncryptService {
 
 			// Authenticate the user
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+			User user = new User(_application.AccountService().getUsername(), _application.AccountService().getPassword());
 			loginResponseCode = _application.AccountService().AuthenticateUser(user);
 
 			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
@@ -139,7 +137,7 @@ public class EncryptService {
 			List<String> recipientList = lists[1];
 
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(ENCRYPTICS_ACCOUNT_USERNAME, ENCRYPTICS_ACCOUNT_PASSWORD);
+			User user = new User(_application.AccountService().getUsername(), _application.AccountService().getPassword());
 			loginResponseCode = _application.AccountService().AuthenticateUser(user);
 
 			//TODO How will you handle login failure?

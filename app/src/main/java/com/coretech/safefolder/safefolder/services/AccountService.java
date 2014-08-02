@@ -49,6 +49,22 @@ public class AccountService {
 	}
 
 	/**
+	 * Method to get the current users username
+	 * @return String
+	 */
+	public String getUsername(){
+		return "michael.sneen@gmail.com";
+	}
+
+	/**
+	 * Method to get the current users password
+	 * @return String
+	 */
+	public String getPassword(){
+		return "password";
+	}
+
+	/**
 	 * Method to get the encryptics account context
 	 * @return AccountContext
 	 */
