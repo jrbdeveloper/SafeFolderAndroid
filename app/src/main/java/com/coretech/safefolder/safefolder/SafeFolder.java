@@ -6,10 +6,10 @@ import android.app.Application;
 import android.os.Build;
 import java.util.ArrayList;
 
-import com.coretech.safefolder.safefolder.services.AccountService;
-import com.coretech.safefolder.safefolder.services.EmailService;
-import com.coretech.safefolder.safefolder.services.EncryptService;
-import com.coretech.safefolder.safefolder.services.FileService;
+import com.coretech.safefolder.safefolder.services.Account;
+import com.coretech.safefolder.safefolder.services.Email;
+import com.coretech.safefolder.safefolder.services.Security;
+import com.coretech.safefolder.safefolder.services.File;
 
 /**
  * Created by john bales on 7/28/2014.
@@ -19,15 +19,10 @@ public class SafeFolder extends Application {
 	//region Private Members
 	private static SafeFolder _instance;
 	private Activity _currentActivity;
-	private FileService _fileService;
-	private EmailService _emailService;
-	private EncryptService _encryptService;
-	private AccountService _accountService;
-	//endregion
-
-	//region Public Members
-	public ArrayList<String> FileList;
-	public ArrayList<String> EmailList;
+	private File _file;
+	private Email _email;
+	private Security _security;
+	private Account _account;
 	//endregion
 
 	//region Constructor
@@ -37,21 +32,13 @@ public class SafeFolder extends Application {
 	public void onCreate(){
 		super.onCreate();
 		_instance = this;
-
-		if(FileList == null){
-			FileList = new ArrayList<String>();
-		}
-
-		if(EmailList == null){
-			EmailList = new ArrayList<String>();
-		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void Close(){
 
-		FileList.clear();
-		EmailList.clear();
+		_file.Collection.clear();
+		//_email.Collection.clear();
 
 		getCurrentActivity().finishAffinity();
 	}
@@ -72,42 +59,42 @@ public class SafeFolder extends Application {
 		return _currentActivity;
 	}
 
-	public FileService FileService(){
-		if(_fileService == null) {
-			_fileService = new FileService(_instance);
+	public File File(){
+		if(_file == null) {
+			_file = new File(_instance);
 		}
 
-		return _fileService;
+		return _file;
 	}
 
-	public EmailService EmailSerivce(){
-		if(_emailService == null){
-			_emailService = new EmailService(_instance);
+	public Email Email(){
+		if(_email == null){
+			_email = new Email(_instance);
 		}
 
-		return _emailService;
+		return _email;
 	}
 
-	public EncryptService EncryptService(){
-		if(_encryptService == null){
-			_encryptService = new EncryptService(_instance);
+	public Security Security(){
+		if(_security == null){
+			_security = new Security(_instance);
 		}
 
-		return _encryptService;
+		return _security;
 	}
 
-	public AccountService AccountService(){
-		if(_accountService == null){
-			_accountService = new AccountService(_instance);
+	public Account Account(){
+		if(_account == null){
+			_account = new Account(_instance);
 		}
 
-		return _accountService;
+		return _account;
 	}
 	//endregion
 
 	//region Public Methods
 	public boolean hasFiles() {
-		return FileList.size() > 0;
+		return _file.Collection.size() > 0;
 	}
 	//endregion
 }

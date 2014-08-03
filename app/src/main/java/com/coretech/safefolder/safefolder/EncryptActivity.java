@@ -16,14 +16,14 @@ public class EncryptActivity extends Activity {
 
 	//region Private members
     private ArrayAdapter<String> _emailListViewAdapter;
-	private SafeFolder _application;
+	private SafeFolder _safeFolder;
 	//endregion
 
 	//region Constructor
 	public EncryptActivity(){
-		if(_application == null){
-			_application = SafeFolder.getInstance();
-			_application.setCurrentActivity(this);
+		if(_safeFolder == null){
+			_safeFolder = SafeFolder.getInstance();
+			_safeFolder.setCurrentActivity(this);
 		}
 	}
 	//endregion
@@ -41,7 +41,7 @@ public class EncryptActivity extends Activity {
 		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
 		emailListView.setSelection(-1);
 
-		_emailListViewAdapter = new ArrayAdapter<String>(_application.getCurrentActivity(), android.R.layout.simple_expandable_list_item_1, _application.EmailList);
+		_emailListViewAdapter = new ArrayAdapter<String>(_safeFolder.getCurrentActivity(), android.R.layout.simple_expandable_list_item_1, _safeFolder.Email().Collection);
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
 		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
@@ -58,9 +58,9 @@ public class EncryptActivity extends Activity {
 
                 // Take the text from the box and add it to the list view
                 if(emailListViewSelectedIndex[0] < 0){
-					_application.EmailList.add(emailAddress);
+					_safeFolder.Email().Collection.add(emailAddress);
 				}else{
-					_application.EmailList.set(emailListViewSelectedIndex[0], emailAddress);
+					_safeFolder.Email().Collection.set(emailListViewSelectedIndex[0], emailAddress);
 					emailListViewSelectedIndex[0] = -1;
 				}
 
@@ -71,13 +71,13 @@ public class EncryptActivity extends Activity {
 		removeEmailButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
 				if(emailListViewSelectedIndex[0] > -1) {
-					_application.EmailList.remove(emailListViewSelectedIndex[0]);
+					_safeFolder.Email().Collection.remove(emailListViewSelectedIndex[0]);
 					emailListViewSelectedIndex[0] = -1;
 					emailTextBox.setText("");
 
 					Bind(emailListView);
 				}else {
-					Toast.makeText(_application.getApplicationContext(), "Please select an item to remove.", Toast.LENGTH_LONG).show();
+					Toast.makeText(_safeFolder.getApplicationContext(), "Please select an item to remove.", Toast.LENGTH_LONG).show();
 				}
 			}
 		});
@@ -91,13 +91,13 @@ public class EncryptActivity extends Activity {
 					}
 				});*/
 
-				_application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), _application.EmailList);
+				_safeFolder.Security().EncryptFiles(_safeFolder.File().GetCollection(), _safeFolder.Email().Collection);
 			}
 		});
 
         encryptButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-			_application.EncryptService().EncryptFiles(_application.FileService().GetFileList(), _application.EmailList);
+			_safeFolder.Security().EncryptFiles(_safeFolder.File().GetCollection(), _safeFolder.Email().Collection);
             }
         });
 

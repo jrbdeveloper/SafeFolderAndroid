@@ -11,36 +11,44 @@ import java.util.ArrayList;
 /**
  * Created by john bales on 7/23/2014.
  */
-public class FileService {
+public class File {
 
 	//region Private Members
-	private SafeFolder _application;
+	private SafeFolder _safeFolder;
+	//endregion
+
+	//region Public Members
+	public ArrayList<String> Collection;
 	//endregion
 
 	//region Constructor
-	public FileService(SafeFolder application){
-		if(_application == null) {
-			_application = application;
+	public File(SafeFolder application){
+		if(_safeFolder == null) {
+			_safeFolder = application;
+		}
+
+		if(Collection == null){
+			Collection = new ArrayList<String>();
 		}
 	}
 	//endregion
 
 	//region Public Methods
     //Call this from the encrypt and Send Button.  This method gets the file(s) that were selected in the previous app.
-    public ArrayList<String> GetFileList() {
-		Intent theIntent = _application.getCurrentActivity().getIntent();
+    public ArrayList<String> GetCollection() {
+		Intent theIntent = _safeFolder.getCurrentActivity().getIntent();
         String theAction = theIntent.getAction();
 
         if (Intent.ACTION_SEND.equals(theAction)) {
-            Bundle bundle = _application.getCurrentActivity().getIntent().getExtras();
+            Bundle bundle = _safeFolder.getCurrentActivity().getIntent().getExtras();
             Uri i = (Uri) bundle.get("android.intent.extra.STREAM");
 
             String inputfilename = i.getPath();
-            String outputfilename = getFileNameFromPath(inputfilename);
+            String outputfilename = getNameFromPath(inputfilename);
 
             //mws delete the toast and encrypt here
-			if(!_application.FileList.contains(inputfilename)){
-				_application.FileList.add(inputfilename);
+			if(!Collection.contains(inputfilename)){
+				Collection.add(inputfilename);
 			}
 
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(theAction) && theIntent.hasExtra(Intent.EXTRA_STREAM)) {
@@ -52,20 +60,20 @@ public class FileService {
 
                 //Create input and output paths
                 String inputfilename = uri.getPath();
-                String outputfilename = getFileNameFromPath(inputfilename);
+                String outputfilename = getNameFromPath(inputfilename);
 
-				if(!_application.FileList.contains(inputfilename)){
-					_application.FileList.add(inputfilename);
+				if(!Collection.contains(inputfilename)){
+					Collection.add(inputfilename);
 				}
             }
         }
 
-		return _application.FileList;
+		return Collection;
     }
 	//endregion
 
 	//region Private Methods
-    public String getFileNameFromPath(String input) {
+    public String getNameFromPath(String input) {
         String[] temp;
         String delimeter = "/";
         temp = input.split(delimeter);

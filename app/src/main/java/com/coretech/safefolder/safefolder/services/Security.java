@@ -19,26 +19,24 @@ import java.util.List;
 /**
  * Created by msneen on 7/22/2014.
  */
-public class EncryptService {
+public class Security {
 
 	//region Private Members
-	private static SafeFolder _application;
+	private static SafeFolder _safeFolder;
 
 	//private OnFinishedListener callback;
-	private static ArrayList<String> _emailArrayList;
 	//endregion
 
 	//region Constructor
-	public EncryptService(SafeFolder application){
-		if(_application == null) {
-			_application = application;
+	public Security(SafeFolder application){
+		if(_safeFolder == null) {
+			_safeFolder = application;
 		}
 	}
 	//endregion
 
 	//region Encryption
 	public void EncryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
-		_emailArrayList = emailList;
 		new EncryptTask(this).execute(fileList, emailList);
 	}
 
@@ -46,7 +44,7 @@ public class EncryptService {
 
 		//EncryptService callback;
 
-		public EncryptTask(EncryptService service) {
+		public EncryptTask(Security service) {
 			//this.callback = service;
 		}
 
@@ -58,8 +56,8 @@ public class EncryptService {
 
 			// Authenticate the user
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(_application.AccountService().getUsername(), _application.AccountService().getPassword());
-			loginResponseCode = _application.AccountService().AuthenticateUser(user);
+			User user = new User(_safeFolder.Account().getUsername(), _safeFolder.Account().getPassword());
+			loginResponseCode = _safeFolder.Account().Authenticate(user);
 
 			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
 				return loginResponseCode;
@@ -91,7 +89,7 @@ public class EncryptService {
 						}
 
 						// Building the .SAFE file is another network operation, keeping it in the background would be best
-						encryptResponseCode = builder.build(_application.AccountService().getAccountContext(), outputStream);
+						encryptResponseCode = builder.build(_safeFolder.Account().getContext(), outputStream);
 					}
 				}
 			}
@@ -109,14 +107,14 @@ public class EncryptService {
 				//Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
 				//callback.onEncrypticsResponse(code);
 
-				_application.EmailSerivce().Send(_application.getCurrentActivity(), _application.FileService().GetFileList(), _emailArrayList);
+				_safeFolder.Email().Send(_safeFolder.getCurrentActivity(), _safeFolder.File().GetCollection(), _safeFolder.Email().Collection);
 
 			} else {
 				// TODO handle the encryptics exceptions here
 				//Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
 			}
 
-			_application.Close();
+			_safeFolder.Close();
 		}
 	}
 	//endregion
@@ -128,7 +126,7 @@ public class EncryptService {
 
 	private static class DecryptTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode>{
 
-		public DecryptTask(EncryptService service){
+		public DecryptTask(Security service){
 		}
 
 		@Override
@@ -137,8 +135,8 @@ public class EncryptService {
 			List<String> recipientList = lists[1];
 
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(_application.AccountService().getUsername(), _application.AccountService().getPassword());
-			loginResponseCode = _application.AccountService().AuthenticateUser(user);
+			User user = new User(_safeFolder.Account().getUsername(), _safeFolder.Account().getPassword());
+			loginResponseCode = _safeFolder.Account().Authenticate(user);
 
 			//TODO How will you handle login failure?
 			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
@@ -157,7 +155,7 @@ public class EncryptService {
 					fis.read(fileContent);
 
 					SafeFile safeFile = SafeFile.createSafeFile(ByteBuffer.wrap(fileContent)); // As previously presented
-					decryptResponseCode = safeFile.decrypt(_application.AccountService().getAccountContext());
+					decryptResponseCode = safeFile.decrypt(_safeFolder.Account().getContext());
 
 					if(decryptResponseCode == EncrypticsResponseCode.SUCCESS){
 						// need to construct a new file from the constructed safefile with an output stream
@@ -202,7 +200,7 @@ public class EncryptService {
 				//Log.d("EncryptService", "Failed to login or decrypt .SAFE files: " + code);
 			}
 
-			_application.Close();
+			_safeFolder.Close();
 		}
 
 		//public interface OnFinishedListener {

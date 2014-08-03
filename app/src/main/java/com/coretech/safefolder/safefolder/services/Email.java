@@ -11,16 +11,24 @@ import java.util.ArrayList;
 /**
  * Created by john bales on 7/23/2014.
  */
-public class EmailService {
+public class Email {
 
 	//region Private Members
-	private SafeFolder _application;
+	private SafeFolder _safeFolder;
+	//endregion
+
+	//region Public Members
+	public ArrayList<String> Collection;
 	//endregion
 
 	//region Constructor
-	public EmailService(SafeFolder application){
-		if(_application == null){
-			_application = application;
+	public Email(SafeFolder application){
+		if(_safeFolder == null){
+			_safeFolder = application;
+		}
+
+		if(Collection == null){
+			Collection = new ArrayList<String>();
 		}
 	}
 	//endregion
@@ -28,8 +36,8 @@ public class EmailService {
 	//region Public Methods
     public void Send(Activity mainActivity, ArrayList encryptedFileList, ArrayList emailList){
         String toAddress = TextUtils.join(",", emailList);
-        String subject = "";
-        String body = "";
+        String subject = "Safe Folder Security Notification";
+        String body = "Attached are your encrypted files. Thank you for using Safe Folder";
         ArrayList<String> attachmentPath = encryptedFileList;
 
         try {

@@ -16,14 +16,14 @@ import java.util.List;
 public class LaunchActivity extends Activity {
 
 	//region Private Members
-	private SafeFolder _application;
+	private SafeFolder _safeFolder;
 	//endregion
 
 	//region Constructor
 	public LaunchActivity(){
-		if(_application == null){
-			_application = SafeFolder.getInstance();
-			_application.setCurrentActivity(this);
+		if(_safeFolder == null){
+			_safeFolder = SafeFolder.getInstance();
+			_safeFolder.setCurrentActivity(this);
 		}
 	}
 	//endregion
@@ -40,18 +40,18 @@ public class LaunchActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 
-		if(_application.hasFiles()){
+		if(_safeFolder.hasFiles()){
 			DetermineWhatToDo();
 		}
 	}
 
 	private void DetermineWhatToDo(){
 		int count = 0;
-		_application.FileList = _application.FileService().GetFileList();
-		int originalListSize = _application.FileList.size();
+		_safeFolder.File().Collection = _safeFolder.File().GetCollection();
+		int originalListSize = _safeFolder.File().Collection.size();
 
 		if(originalListSize > 0) {
-			for(String item : _application.FileList){
+			for(String item : _safeFolder.File().Collection){
 				if(item.contains(".safe")){
 					count ++;
 				}
@@ -60,7 +60,7 @@ public class LaunchActivity extends Activity {
 
 		if(originalListSize == 0){ // we have no files; show the file manager
 			//ShowFileManager();
-			_application.Close();
+			_safeFolder.Close();
 		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
 			ShowEncryptActivity();
 		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe

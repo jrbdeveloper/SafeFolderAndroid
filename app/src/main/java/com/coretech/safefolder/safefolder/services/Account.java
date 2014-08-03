@@ -10,17 +10,17 @@ import com.encrypticslibrary.impl.AccountRegistration;
 /**
  * Created by john bales on 8/1/2014.
  */
-public class AccountService {
+public class Account {
 
 	//region Private Members
-	private SafeFolder _application;
+	private SafeFolder _safeFolder;
 	private AccountContext _accountContext;
 	//endregion
 
 	//region Constructor
-	public AccountService(SafeFolder application){
-		if(_application == null){
-			_application = application;
+	public Account(SafeFolder application){
+		if(_safeFolder == null){
+			_safeFolder = application;
 		}
 	}
 	//endregion
@@ -41,8 +41,8 @@ public class AccountService {
 	 * @param user
 	 * @return EncrypticsResponseCode
 	 */
-	public EncrypticsResponseCode AuthenticateUser(User user){
-		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_application.getApplicationContext());
+	public EncrypticsResponseCode Authenticate(User user){
+		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_safeFolder.getApplicationContext());
 		_accountContext =  factory.generateAccountContext(user.EmailAddress(), user.Password());
 
 		return _accountContext.login();
@@ -68,7 +68,7 @@ public class AccountService {
 	 * Method to get the encryptics account context
 	 * @return AccountContext
 	 */
-	public AccountContext getAccountContext(){
+	public AccountContext getContext(){
 		return _accountContext;
 	}
 	//endregion
