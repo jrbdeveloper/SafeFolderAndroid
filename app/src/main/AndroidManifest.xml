@@ -8,36 +8,39 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="com.coretech.safefolder.safefolder.SafeFolder"
+        android:name=".SafeFolder"
         android:allowBackup="true"
         android:icon="@drawable/safefolder"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <activity
             android:name=".LaunchActivity"
             android:label="@string/app_name" >
-
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".EncryptActivity"
             android:label="@string/app_name" >
         </activity>
-
         <activity
             android:name=".DecryptActivity"
             android:label="@string/title_activity_decrypt" >
         </activity>
-
+        <activity
+            android:name=".RegisterActivity"
+            android:label="@string/title_activity_register" >
+        </activity>
     </application>
 
 </manifest>

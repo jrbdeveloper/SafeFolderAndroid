@@ -16,5 +16,21 @@
     <string name="fieldHint">jrbdeveloper@gmail.com</string>
     <string name="title_activity_decrypt">DecryptActivity</string>
     <string name="title_activity_launch">LaunchActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
+
+    <string name="launch_activity_header">Please sign in to use Safe Folder</string>
+    <string name="register_activity_header">Register an account to use Safe Folder</string>
+
+    <string name="email_address_label">E-Mail Address:</string>
+    <string name="password_label">Password:</string>
+    <string name="first_name_label">First Name:</string>
+    <string name="last_name_label">Last Name:</string>
+
+    <string name="remember_me_text">Remember Me</string>
+    <string name="register_new_button_text">Register...</string>
+    <string name="register_button_text">Register</string>
+    <string name="login_button_text">Sign In</string>
+
+
 
 </resources>

@@ -37,7 +37,7 @@ public class EncryptActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_encrypt);
 
-		final TextView emailTextBox = (TextView) findViewById(R.id.editText);
+		final TextView emailTextBox = (TextView) findViewById(R.id.firstNameText);
 		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
 		emailListView.setSelection(-1);
 
