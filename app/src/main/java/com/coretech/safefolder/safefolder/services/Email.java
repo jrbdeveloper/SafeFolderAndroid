@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class Email {
 
 	//region Private Members
-	private SafeFolder _safeFolder;
 	//endregion
 
 	//region Public Members
@@ -23,10 +22,6 @@ public class Email {
 
 	//region Constructor
 	public Email(SafeFolder application){
-		if(_safeFolder == null){
-			_safeFolder = application;
-		}
-
 		if(Collection == null){
 			Collection = new ArrayList<String>();
 		}

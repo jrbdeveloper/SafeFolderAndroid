@@ -22,16 +22,11 @@ import java.util.List;
 public class Security {
 
 	//region Private Members
-	private static SafeFolder _safeFolder;
-
 	//private OnFinishedListener callback;
 	//endregion
 
 	//region Constructor
-	public Security(SafeFolder application){
-		if(_safeFolder == null) {
-			_safeFolder = application;
-		}
+	public Security(){
 	}
 	//endregion
 
@@ -56,8 +51,8 @@ public class Security {
 
 			// Authenticate the user
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(_safeFolder.Account().getUsername(), _safeFolder.Account().getPassword());
-			loginResponseCode = _safeFolder.Account().Authenticate(user);
+			User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
+			loginResponseCode = SafeFolder.Instance().User().Account().Authenticate();
 
 			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
 				return loginResponseCode;
@@ -89,7 +84,7 @@ public class Security {
 						}
 
 						// Building the .SAFE file is another network operation, keeping it in the background would be best
-						encryptResponseCode = builder.build(_safeFolder.Account().getContext(), outputStream);
+						encryptResponseCode = builder.build(SafeFolder.Instance().User().Account().getContext(), outputStream);
 					}
 				}
 			}
@@ -107,14 +102,14 @@ public class Security {
 				//Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
 				//callback.onEncrypticsResponse(code);
 
-				_safeFolder.Email().Send(_safeFolder.getCurrentActivity(), _safeFolder.File().GetCollection(), _safeFolder.Email().Collection);
+				SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection);
 
 			} else {
 				// TODO handle the encryptics exceptions here
 				//Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
 			}
 
-			_safeFolder.Close();
+			SafeFolder.Instance().Close();
 		}
 	}
 	//endregion
@@ -135,8 +130,8 @@ public class Security {
 			List<String> recipientList = lists[1];
 
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(_safeFolder.Account().getUsername(), _safeFolder.Account().getPassword());
-			loginResponseCode = _safeFolder.Account().Authenticate(user);
+			User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
+			loginResponseCode = SafeFolder.Instance().User().Account().Authenticate();
 
 			//TODO How will you handle login failure?
 			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
@@ -155,7 +150,7 @@ public class Security {
 					fis.read(fileContent);
 
 					SafeFile safeFile = SafeFile.createSafeFile(ByteBuffer.wrap(fileContent)); // As previously presented
-					decryptResponseCode = safeFile.decrypt(_safeFolder.Account().getContext());
+					decryptResponseCode = safeFile.decrypt(SafeFolder.Instance().User().Account().getContext());
 
 					if(decryptResponseCode == EncrypticsResponseCode.SUCCESS){
 						// need to construct a new file from the constructed safefile with an output stream
@@ -200,7 +195,7 @@ public class Security {
 				//Log.d("EncryptService", "Failed to login or decrypt .SAFE files: " + code);
 			}
 
-			_safeFolder.Close();
+			SafeFolder.Instance().Close();
 		}
 
 		//public interface OnFinishedListener {

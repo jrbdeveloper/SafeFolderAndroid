@@ -9,22 +9,26 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import com.coretech.safefolder.safefolder.entities.User;
+import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 
 import java.util.List;
 
 public class LaunchActivity extends Activity {
 
 	//region Private Members
-	private SafeFolder _safeFolder;
+	private boolean _needToDetermineWhatToDo = true;
 	//endregion
 
 	//region Constructor
 	public LaunchActivity(){
-		if(_safeFolder == null){
-			_safeFolder = SafeFolder.getInstance();
-			_safeFolder.setCurrentActivity(this);
-		}
+		SafeFolder.Instance().setCurrentActivity(this);
 	}
 	//endregion
 
@@ -33,34 +37,77 @@ public class LaunchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
-		DetermineWhatToDo();
+		if(_needToDetermineWhatToDo){
+			DetermineWhatToDo();
+		}
+
+		Button registerButton = (Button) findViewById(R.id.register_button);
+		Button signInButton = (Button) findViewById(R.id.sign_in_button);
+
+		final EditText usernameText = (EditText) findViewById(R.id.usernameText);
+		final EditText passwordText = (EditText) findViewById(R.id.passwordText);
+		final CheckBox rememberMeCheck = (CheckBox) findViewById(R.id.remember_me_check);
+
+		signInButton.setOnClickListener(new Button.OnClickListener(){
+			public void onClick(View v){
+
+				String username = usernameText.getText().toString();
+				String password = passwordText.getText().toString();
+
+				User user = new User(username, password);
+				SafeFolder.Instance().User(user);
+
+				if(rememberMeCheck.isChecked()){
+					SafeFolder.Instance().User().Account().setUsername(username);
+					SafeFolder.Instance().User().Account().setPassword(password);
+				}
+
+				EncrypticsResponseCode authenticateResponse = SafeFolder.Instance().User().Account().Authenticate();
+
+				if(authenticateResponse == EncrypticsResponseCode.SUCCESS){
+					SafeFolder.Instance().Close();
+				}else{
+					Toast.makeText(SafeFolder.Instance().getApplicationContext(), "Error Logging In", Toast.LENGTH_LONG);
+				}
+			}
+		});
+
+		registerButton.setOnClickListener(new Button.OnClickListener(){
+			public void onClick(View v){
+				ShowRegistrationActivity();
+			}
+		});
     }
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		if(_safeFolder.hasFiles()){
-			DetermineWhatToDo();
+		if(SafeFolder.Instance().hasFiles()){
+			//DetermineWhatToDo();
 		}
 	}
 
 	private void DetermineWhatToDo(){
 		int count = 0;
-		_safeFolder.File().Collection = _safeFolder.File().GetCollection();
-		int originalListSize = _safeFolder.File().Collection.size();
+		SafeFolder.Instance().File().Collection = SafeFolder.Instance().File().GetCollection();
+		int originalListSize = SafeFolder.Instance().File().Collection.size();
 
 		if(originalListSize > 0) {
-			for(String item : _safeFolder.File().Collection){
+			for(String item : SafeFolder.Instance().File().Collection){
 				if(item.contains(".safe")){
 					count ++;
 				}
 			}
 		}
 
-		if(originalListSize == 0){ // we have no files; show the file manager
+		if(originalListSize == 0){ // we have no files; check for log on
 			//ShowFileManager();
-			_safeFolder.Close();
+			if(SafeFolder.Instance().User().IsLoggedIn()){
+				SafeFolder.Instance().Close();
+			}
+
+			_needToDetermineWhatToDo = false;
 		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
 			ShowEncryptActivity();
 		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe
@@ -78,6 +125,11 @@ public class LaunchActivity extends Activity {
 	private void ShowDecryptActivity(){
 		Intent showDecrypt = new Intent(this, DecryptActivity.class);
 		startActivity(showDecrypt);
+	}
+
+	private void ShowRegistrationActivity(){
+		Intent showRegister = new Intent(this, RegisterActivity.class);
+		startActivity(showRegister);
 	}
 
 	/**

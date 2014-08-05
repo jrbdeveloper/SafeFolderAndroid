@@ -77,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/remember_me_text"
-                android:id="@+id/rememberCheck"
+                android:id="@+id/remember_me_check"
                 android:layout_column="1"/>
         </TableRow>
 
@@ -90,14 +90,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/register_new_button_text"
-                android:id="@+id/registerButton"
+                android:id="@+id/register_button"
                 android:layout_column="0"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/login_button_text"
-                android:id="@+id/signInButton"
+                android:id="@+id/sign_in_button"
                 android:layout_column="1"/>
 
         </TableRow>

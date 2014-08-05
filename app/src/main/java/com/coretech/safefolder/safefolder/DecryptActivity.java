@@ -13,17 +13,13 @@ import java.util.ArrayList;
 public class DecryptActivity extends Activity {
 
 	//region Private Members
-	private SafeFolder _safeFolder;
 	private ArrayAdapter<String> _listViewAdapter;
 	private ArrayList<String> _listArray = new ArrayList<String>();
 	//endregion
 
 	//region Constructor
 	public DecryptActivity(){
-		if(_safeFolder == null){
-			_safeFolder = SafeFolder.getInstance();
-			_safeFolder.setCurrentActivity(this);
-		}
+		SafeFolder.Instance().setCurrentActivity(this);
 	}
 	//endregion
 
@@ -35,22 +31,22 @@ public class DecryptActivity extends Activity {
 		final ListView fileListView = (ListView) findViewById(R.id.fileListView);
 		Button decryptButton = (Button) findViewById(R.id.decryptButton);
 
-		_listViewAdapter = new ArrayAdapter<String>(_safeFolder.getCurrentActivity(), android.R.layout.simple_expandable_list_item_1,_listArray);
+		_listViewAdapter = new ArrayAdapter<String>(SafeFolder.Instance().getCurrentActivity(), android.R.layout.simple_expandable_list_item_1,_listArray);
 
 		addEncryptedFilesToList();
 		Bind(fileListView);
 
 		decryptButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				_safeFolder.Security().DecryptFiles(_safeFolder.File().Collection, _safeFolder.Email().Collection);
+				SafeFolder.Instance().Security().DecryptFiles(SafeFolder.Instance().File().Collection, SafeFolder.Instance().Email().Collection);
 			}
 		});
     }
 
 	private void addEncryptedFilesToList(){
-		if(_safeFolder.File().Collection.size() > 0){
-			for(String item : _safeFolder.File().Collection){
-				_listArray.add(_safeFolder.File().getNameFromPath(item.toString()));
+		if(SafeFolder.Instance().File().Collection.size() > 0){
+			for(String item : SafeFolder.Instance().File().Collection){
+				_listArray.add(SafeFolder.Instance().File().getNameFromPath(item.toString()));
 			}
 		}
 	}

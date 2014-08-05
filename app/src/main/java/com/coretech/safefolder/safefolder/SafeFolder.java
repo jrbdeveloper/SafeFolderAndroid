@@ -4,8 +4,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Build;
-import java.util.ArrayList;
 
+import com.coretech.safefolder.safefolder.entities.User;
 import com.coretech.safefolder.safefolder.services.Account;
 import com.coretech.safefolder.safefolder.services.Email;
 import com.coretech.safefolder.safefolder.services.Security;
@@ -22,7 +22,7 @@ public class SafeFolder extends Application {
 	private File _file;
 	private Email _email;
 	private Security _security;
-	private Account _account;
+	private User _user;
 	//endregion
 
 	//region Constructor
@@ -45,7 +45,7 @@ public class SafeFolder extends Application {
 	//endregion
 
 	//region Getters & Setters
-	public static SafeFolder getInstance(){
+	public static SafeFolder Instance(){
 		return _instance;
 	}
 
@@ -61,7 +61,7 @@ public class SafeFolder extends Application {
 
 	public File File(){
 		if(_file == null) {
-			_file = new File(_instance);
+			_file = new File();
 		}
 
 		return _file;
@@ -77,18 +77,24 @@ public class SafeFolder extends Application {
 
 	public Security Security(){
 		if(_security == null){
-			_security = new Security(_instance);
+			_security = new Security();
 		}
 
 		return _security;
 	}
 
-	public Account Account(){
-		if(_account == null){
-			_account = new Account(_instance);
+	public User User(){
+		if(_user == null){
+			_user = new User();
 		}
 
-		return _account;
+		return _user;
+	}
+
+	public void User(User user){
+		if(user != null){
+			_user = user;
+		}
 	}
 	//endregion
 

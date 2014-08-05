@@ -1,5 +1,9 @@
 package com.coretech.safefolder.safefolder.services;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.coretech.safefolder.safefolder.R;
 import com.coretech.safefolder.safefolder.SafeFolder;
 import com.coretech.safefolder.safefolder.entities.User;
 import com.encrypticsforandroid.encrypticsforandroid.AndroidAccountContextFactory;
@@ -13,15 +17,11 @@ import com.encrypticslibrary.impl.AccountRegistration;
 public class Account {
 
 	//region Private Members
-	private SafeFolder _safeFolder;
 	private AccountContext _accountContext;
 	//endregion
 
 	//region Constructor
-	public Account(SafeFolder application){
-		if(_safeFolder == null){
-			_safeFolder = application;
-		}
+	public Account(){
 	}
 	//endregion
 
@@ -38,14 +38,27 @@ public class Account {
 
 	/**
 	 * Method to authenticate a user with the encryptics service
-	 * @param user
 	 * @return EncrypticsResponseCode
 	 */
-	public EncrypticsResponseCode Authenticate(User user){
-		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(_safeFolder.getApplicationContext());
-		_accountContext =  factory.generateAccountContext(user.EmailAddress(), user.Password());
+	public EncrypticsResponseCode Authenticate(){
+		EncrypticsResponseCode responseCode;
+		String username = SafeFolder.Instance().User().EmailAddress();
+		String password = SafeFolder.Instance().User().Password();
 
-		return _accountContext.login();
+		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(SafeFolder.Instance().getApplicationContext());
+		_accountContext =  factory.generateAccountContext(username, password);
+
+		EncrypticsResponseCode loginResponse = _accountContext.login();
+
+		if(loginResponse == EncrypticsResponseCode.SUCCESS){
+			SafeFolder.Instance().User().IsLoggedIn(true);
+			responseCode = EncrypticsResponseCode.SUCCESS;
+		}else{
+			SafeFolder.Instance().User().IsLoggedIn(false);
+			responseCode = EncrypticsResponseCode.UNKNOWN;
+		}
+
+		return responseCode;
 	}
 
 	/**
@@ -53,7 +66,19 @@ public class Account {
 	 * @return String
 	 */
 	public String getUsername(){
-		return "michael.sneen@gmail.com";
+
+		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
+		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_username);
+		String username = sharedPref.getString(SafeFolder.Instance().getString(R.string.the_username), defaultValue);
+
+		return username;
+	}
+
+	public void setUsername(String username){
+		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(SafeFolder.Instance().getString(R.string.the_username), username);
+		editor.commit();
 	}
 
 	/**
@@ -61,7 +86,35 @@ public class Account {
 	 * @return String
 	 */
 	public String getPassword(){
-		return "password";
+		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
+		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_password);
+		String password = sharedPref.getString(SafeFolder.Instance().getString(R.string.the_password), defaultValue);
+
+		return password;
+	}
+
+	public void setPassword(String password){
+		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(SafeFolder.Instance().getString(R.string.the_password), password);
+		editor.commit();
+	}
+
+	public boolean getRememberMe(){
+		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
+		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.remember_me_default);
+		String rememberMe = sharedPref.getString(SafeFolder.Instance().getString(R.string.remember_me), defaultValue);
+
+		return rememberMe == "yes";
+	}
+
+	public void setRememberMe(boolean remember){
+		String _remember = (remember) ? "yes" : "no";
+
+		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(SafeFolder.Instance().getString(R.string.remember_me), _remember);
+		editor.commit();
 	}
 
 	/**

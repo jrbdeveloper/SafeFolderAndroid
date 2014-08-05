@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class File {
 
 	//region Private Members
-	private SafeFolder _safeFolder;
 	//endregion
 
 	//region Public Members
@@ -22,11 +21,7 @@ public class File {
 	//endregion
 
 	//region Constructor
-	public File(SafeFolder application){
-		if(_safeFolder == null) {
-			_safeFolder = application;
-		}
-
+	public File(){
 		if(Collection == null){
 			Collection = new ArrayList<String>();
 		}
@@ -36,11 +31,11 @@ public class File {
 	//region Public Methods
     //Call this from the encrypt and Send Button.  This method gets the file(s) that were selected in the previous app.
     public ArrayList<String> GetCollection() {
-		Intent theIntent = _safeFolder.getCurrentActivity().getIntent();
+		Intent theIntent = SafeFolder.Instance().getCurrentActivity().getIntent();
         String theAction = theIntent.getAction();
 
         if (Intent.ACTION_SEND.equals(theAction)) {
-            Bundle bundle = _safeFolder.getCurrentActivity().getIntent().getExtras();
+            Bundle bundle = SafeFolder.Instance().getCurrentActivity().getIntent().getExtras();
             Uri i = (Uri) bundle.get("android.intent.extra.STREAM");
 
             String inputfilename = i.getPath();
