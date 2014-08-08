@@ -38,14 +38,14 @@ public class DecryptActivity extends Activity {
 
 		decryptButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				SafeFolder.Instance().Security().DecryptFiles(SafeFolder.Instance().File().Collection, SafeFolder.Instance().Email().Collection);
+				SafeFolder.Instance().Security().DecryptFiles(SafeFolder.Instance().File().Collection(), SafeFolder.Instance().Email().Collection());
 			}
 		});
     }
 
 	private void addEncryptedFilesToList(){
-		if(SafeFolder.Instance().File().Collection.size() > 0){
-			for(String item : SafeFolder.Instance().File().Collection){
+		if(SafeFolder.Instance().File().Collection().size() > 0){
+			for(String item : SafeFolder.Instance().File().Collection()){
 				_listArray.add(SafeFolder.Instance().File().getNameFromPath(item.toString()));
 			}
 		}

@@ -6,7 +6,6 @@ import android.app.Application;
 import android.os.Build;
 
 import com.coretech.safefolder.safefolder.entities.User;
-import com.coretech.safefolder.safefolder.services.Account;
 import com.coretech.safefolder.safefolder.services.Email;
 import com.coretech.safefolder.safefolder.services.Security;
 import com.coretech.safefolder.safefolder.services.File;
@@ -26,18 +25,22 @@ public class SafeFolder extends Application {
 	//endregion
 
 	//region Constructor
+	public SafeFolder(){
+		if(_instance == null){
+			_instance = this;
+		}
+	}
 	//endregion
 
 	//region Events
 	public void onCreate(){
 		super.onCreate();
-		_instance = this;
 	}
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void Close(){
 
-		_file.Collection.clear();
+		_file.Collection().clear();
 		//_email.Collection.clear();
 
 		getCurrentActivity().finishAffinity();
@@ -69,7 +72,7 @@ public class SafeFolder extends Application {
 
 	public Email Email(){
 		if(_email == null){
-			_email = new Email(_instance);
+			_email = new Email();
 		}
 
 		return _email;
@@ -90,17 +93,11 @@ public class SafeFolder extends Application {
 
 		return _user;
 	}
-
-	public void User(User user){
-		if(user != null){
-			_user = user;
-		}
-	}
 	//endregion
 
 	//region Public Methods
 	public boolean hasFiles() {
-		return _file.Collection.size() > 0;
+		return _file.Collection().size() > 0;
 	}
 	//endregion
 }

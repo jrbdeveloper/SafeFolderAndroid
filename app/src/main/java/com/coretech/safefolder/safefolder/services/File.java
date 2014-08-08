@@ -14,19 +14,30 @@ import java.util.ArrayList;
 public class File {
 
 	//region Private Members
+	private ArrayList<String> _collection;
 	//endregion
 
 	//region Public Members
-	public ArrayList<String> Collection;
+
 	//endregion
 
 	//region Constructor
 	public File(){
-		if(Collection == null){
-			Collection = new ArrayList<String>();
+		if(_collection == null){
+			_collection = new ArrayList<String>();
 		}
 	}
 	//endregion
+
+	public ArrayList<String> Collection(){
+		return _collection;
+	}
+
+	public void Collection(ArrayList<String> collection){
+		if(collection.size() > 0){
+			_collection = collection;
+		}
+	}
 
 	//region Public Methods
     //Call this from the encrypt and Send Button.  This method gets the file(s) that were selected in the previous app.
@@ -42,8 +53,8 @@ public class File {
             String outputfilename = getNameFromPath(inputfilename);
 
             //mws delete the toast and encrypt here
-			if(!Collection.contains(inputfilename)){
-				Collection.add(inputfilename);
+			if(!_collection.contains(inputfilename)){
+				_collection.add(inputfilename);
 			}
 
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(theAction) && theIntent.hasExtra(Intent.EXTRA_STREAM)) {
@@ -57,13 +68,13 @@ public class File {
                 String inputfilename = uri.getPath();
                 String outputfilename = getNameFromPath(inputfilename);
 
-				if(!Collection.contains(inputfilename)){
-					Collection.add(inputfilename);
+				if(!_collection.contains(inputfilename)){
+					_collection.add(inputfilename);
 				}
             }
         }
 
-		return Collection;
+		return _collection;
     }
 	//endregion
 

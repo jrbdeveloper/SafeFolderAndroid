@@ -14,16 +14,26 @@ import java.util.ArrayList;
 public class Email {
 
 	//region Private Members
+	private ArrayList<String> _collection;
 	//endregion
 
 	//region Public Members
-	public ArrayList<String> Collection;
 	//endregion
 
+	public ArrayList<String> Collection(){
+		return _collection;
+	}
+
+	public void Collection(ArrayList<String> collection){
+		if(collection.size() > 0){
+			_collection = collection;
+		}
+	}
+
 	//region Constructor
-	public Email(SafeFolder application){
-		if(Collection == null){
-			Collection = new ArrayList<String>();
+	public Email(){
+		if(_collection == null){
+			_collection = new ArrayList<String>();
 		}
 	}
 	//endregion

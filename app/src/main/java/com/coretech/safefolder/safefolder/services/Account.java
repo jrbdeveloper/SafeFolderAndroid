@@ -1,7 +1,9 @@
 package com.coretech.safefolder.safefolder.services;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 
 import com.coretech.safefolder.safefolder.R;
 import com.coretech.safefolder.safefolder.SafeFolder;
@@ -11,13 +13,16 @@ import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 import com.encrypticslibrary.impl.AccountContext;
 import com.encrypticslibrary.impl.AccountRegistration;
 
+import java.util.List;
+
 /**
  * Created by john bales on 8/1/2014.
  */
 public class Account {
 
 	//region Private Members
-	private AccountContext _accountContext;
+	private static AccountContext _accountContext;
+	private static EncrypticsResponseCode _loginResponse;
 	//endregion
 
 	//region Constructor
@@ -40,25 +45,11 @@ public class Account {
 	 * Method to authenticate a user with the encryptics service
 	 * @return EncrypticsResponseCode
 	 */
-	public EncrypticsResponseCode Authenticate(){
-		EncrypticsResponseCode responseCode;
-		String username = SafeFolder.Instance().User().EmailAddress();
-		String password = SafeFolder.Instance().User().Password();
+	public EncrypticsResponseCode Authenticate(ProgressDialog progress){
 
-		AndroidAccountContextFactory factory = new AndroidAccountContextFactory(SafeFolder.Instance().getApplicationContext());
-		_accountContext =  factory.generateAccountContext(username, password);
+		new LoginTask(progress).execute(SafeFolder.Instance().User().Username(), SafeFolder.Instance().User().Password());
 
-		EncrypticsResponseCode loginResponse = _accountContext.login();
-
-		if(loginResponse == EncrypticsResponseCode.SUCCESS){
-			SafeFolder.Instance().User().IsLoggedIn(true);
-			responseCode = EncrypticsResponseCode.SUCCESS;
-		}else{
-			SafeFolder.Instance().User().IsLoggedIn(false);
-			responseCode = EncrypticsResponseCode.UNKNOWN;
-		}
-
-		return responseCode;
+		return _loginResponse;
 	}
 
 	/**
@@ -125,4 +116,59 @@ public class Account {
 		return _accountContext;
 	}
 	//endregion
+
+	private static class LoginTask extends AsyncTask<String, Void, EncrypticsResponseCode>{
+		private ProgressDialog _progress;
+
+		public LoginTask(ProgressDialog progress){
+			_progress = progress;
+		}
+
+		@Override
+		protected EncrypticsResponseCode doInBackground(String... params){
+
+			EncrypticsResponseCode responseCode;
+			String username = SafeFolder.Instance().User().Username();
+			String password = SafeFolder.Instance().User().Password();
+
+			AndroidAccountContextFactory factory = new AndroidAccountContextFactory(SafeFolder.Instance().getApplicationContext());
+			_accountContext =  factory.generateAccountContext(username, password);
+
+			EncrypticsResponseCode loginResponse = _accountContext.login();
+
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			if(loginResponse == EncrypticsResponseCode.SUCCESS){
+				SafeFolder.Instance().User().IsLoggedIn(true);
+				responseCode = EncrypticsResponseCode.SUCCESS;
+			}else{
+				SafeFolder.Instance().User().IsLoggedIn(false);
+				responseCode = EncrypticsResponseCode.UNKNOWN;
+			}
+
+			return responseCode;
+		}
+
+		@Override
+		public void onPreExecute(){
+		}
+
+		@Override
+		protected void onPostExecute(EncrypticsResponseCode code){
+
+			if(EncrypticsResponseCode.SUCCESS == code){
+				SafeFolder.Instance().User().IsLoggedIn(true);
+			}else{
+				SafeFolder.Instance().User().IsLoggedIn(false);
+			}
+
+			_progress.dismiss();
+			_loginResponse = code;
+			SafeFolder.Instance().Close();
+		}
+	}
 }

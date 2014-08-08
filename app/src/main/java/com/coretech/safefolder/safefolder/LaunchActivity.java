@@ -1,6 +1,7 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -14,16 +15,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.coretech.safefolder.safefolder.entities.User;
-import com.encrypticslibrary.api.response.EncrypticsResponseCode;
-
 import java.util.List;
 
 public class LaunchActivity extends Activity {
 
 	//region Private Members
 	private boolean _needToDetermineWhatToDo = true;
+	ProgressDialog _progress;
 	//endregion
 
 	//region Constructor
@@ -37,12 +35,16 @@ public class LaunchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
+		_progress = new ProgressDialog(this);
+		_progress.setMessage("Authenticating, please wait...");
+		_progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
 		if(_needToDetermineWhatToDo){
 			DetermineWhatToDo();
 		}
 
 		Button registerButton = (Button) findViewById(R.id.register_button);
-		Button signInButton = (Button) findViewById(R.id.sign_in_button);
+		final Button signInButton = (Button) findViewById(R.id.sign_in_button);
 
 		final EditText usernameText = (EditText) findViewById(R.id.usernameText);
 		final EditText passwordText = (EditText) findViewById(R.id.passwordText);
@@ -50,24 +52,37 @@ public class LaunchActivity extends Activity {
 
 		signInButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
+				_progress.setIndeterminate(true);
+				_progress.show();
+				signInButton.setEnabled(false);
 
 				String username = usernameText.getText().toString();
 				String password = passwordText.getText().toString();
-
-				User user = new User(username, password);
-				SafeFolder.Instance().User(user);
+				boolean rememberMe = rememberMeCheck.isChecked();
 
 				if(rememberMeCheck.isChecked()){
 					SafeFolder.Instance().User().Account().setUsername(username);
 					SafeFolder.Instance().User().Account().setPassword(password);
+					SafeFolder.Instance().User().Account().setRememberMe(rememberMe);
+				}else{
+					SafeFolder.Instance().User().Account().setUsername(username);
+					SafeFolder.Instance().User().Account().setPassword(password);
+
+					SafeFolder.Instance().User().Username(username);
+					SafeFolder.Instance().User().Password(password);
 				}
 
-				EncrypticsResponseCode authenticateResponse = SafeFolder.Instance().User().Account().Authenticate();
+				try {
+					SafeFolder.Instance().User().Account().Authenticate(_progress);
 
-				if(authenticateResponse == EncrypticsResponseCode.SUCCESS){
-					SafeFolder.Instance().Close();
-				}else{
-					Toast.makeText(SafeFolder.Instance().getApplicationContext(), "Error Logging In", Toast.LENGTH_LONG);
+					if(!SafeFolder.Instance().User().IsLoggedIn()){
+						Toast.makeText(SafeFolder.Instance().getApplicationContext(), "Error Logging In", Toast.LENGTH_LONG);
+					}
+
+					signInButton.setEnabled(true);
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});
@@ -90,11 +105,11 @@ public class LaunchActivity extends Activity {
 
 	private void DetermineWhatToDo(){
 		int count = 0;
-		SafeFolder.Instance().File().Collection = SafeFolder.Instance().File().GetCollection();
-		int originalListSize = SafeFolder.Instance().File().Collection.size();
+		SafeFolder.Instance().File().Collection(SafeFolder.Instance().File().GetCollection());
+		int originalListSize = SafeFolder.Instance().File().Collection().size();
 
 		if(originalListSize > 0) {
-			for(String item : SafeFolder.Instance().File().Collection){
+			for(String item : SafeFolder.Instance().File().Collection()){
 				if(item.contains(".safe")){
 					count ++;
 				}
@@ -105,9 +120,10 @@ public class LaunchActivity extends Activity {
 			//ShowFileManager();
 			if(SafeFolder.Instance().User().IsLoggedIn()){
 				SafeFolder.Instance().Close();
+				_needToDetermineWhatToDo = false;
 			}
 
-			_needToDetermineWhatToDo = false;
+			_needToDetermineWhatToDo = true;
 		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
 			ShowEncryptActivity();
 		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe

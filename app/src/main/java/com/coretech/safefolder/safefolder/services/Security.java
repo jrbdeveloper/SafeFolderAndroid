@@ -50,12 +50,14 @@ public class Security {
 			List<String> recipientList = lists[1];
 
 			// Authenticate the user
-			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
-			loginResponseCode = SafeFolder.Instance().User().Account().Authenticate();
+			if(!SafeFolder.Instance().User().IsLoggedIn()){
+				EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
+				User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
+				loginResponseCode = SafeFolder.Instance().User().Account().Authenticate(null);
 
-			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
-				return loginResponseCode;
+				if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
+					return loginResponseCode;
+				}
 			}
 
 			EncrypticsResponseCode encryptResponseCode = EncrypticsResponseCode.UNKNOWN;
@@ -102,7 +104,7 @@ public class Security {
 				//Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
 				//callback.onEncrypticsResponse(code);
 
-				SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection);
+				SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection());
 
 			} else {
 				// TODO handle the encryptics exceptions here
@@ -131,7 +133,7 @@ public class Security {
 
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
 			User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
-			loginResponseCode = SafeFolder.Instance().User().Account().Authenticate();
+			loginResponseCode = SafeFolder.Instance().User().Account().Authenticate(null);
 
 			//TODO How will you handle login failure?
 			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
