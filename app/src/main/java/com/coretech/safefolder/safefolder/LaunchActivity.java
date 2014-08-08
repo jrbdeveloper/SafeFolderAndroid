@@ -2,12 +2,15 @@ package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +27,10 @@ public class LaunchActivity extends Activity {
 	ProgressDialog _progress;
 	//endregion
 
+	Context mContext = LaunchActivity.this;
+	SharedPreferences appPreferences;
+	boolean isAppInstalled = false;
+
 	//region Constructor
 	public LaunchActivity(){
 		SafeFolder.Instance().setCurrentActivity(this);
@@ -35,13 +42,30 @@ public class LaunchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
+		//check if application is running first time, only then create shorcut
+		appPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		isAppInstalled = appPreferences.getBoolean("isAppInstalled",false);
+		if(isAppInstalled==false) {
+
+			// create short code
+			Intent shortcutIntent = new Intent(getApplicationContext(), LaunchActivity.class);
+			shortcutIntent.setAction(Intent.ACTION_MAIN);
+			Intent intent = new Intent();
+			intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Safe Folder");
+			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.safefolder));
+			intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+			getApplicationContext().sendBroadcast(intent);
+
+			//Make preference true
+			SharedPreferences.Editor editor = appPreferences.edit();
+			editor.putBoolean("isAppInstalled", true);
+			editor.commit();
+		}
+
 		_progress = new ProgressDialog(this);
 		_progress.setMessage("Authenticating, please wait...");
 		_progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-		if(_needToDetermineWhatToDo){
-			DetermineWhatToDo();
-		}
 
 		Button registerButton = (Button) findViewById(R.id.register_button);
 		final Button signInButton = (Button) findViewById(R.id.sign_in_button);
@@ -49,6 +73,16 @@ public class LaunchActivity extends Activity {
 		final EditText usernameText = (EditText) findViewById(R.id.usernameText);
 		final EditText passwordText = (EditText) findViewById(R.id.passwordText);
 		final CheckBox rememberMeCheck = (CheckBox) findViewById(R.id.remember_me_check);
+
+		if(SafeFolder.Instance().User().Account().getRememberMe()){
+			usernameText.setText(SafeFolder.Instance().User().Account().getUsername());
+			passwordText.setText(SafeFolder.Instance().User().Account().getPassword());
+			rememberMeCheck.setChecked(true);
+		}
+
+		if(_needToDetermineWhatToDo){
+			DetermineWhatToDo();
+		}
 
 		signInButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
@@ -60,16 +94,14 @@ public class LaunchActivity extends Activity {
 				String password = passwordText.getText().toString();
 				boolean rememberMe = rememberMeCheck.isChecked();
 
+				SafeFolder.Instance().User().Username(username);
+				SafeFolder.Instance().User().Password(password);
+				SafeFolder.Instance().User().RememberMe(rememberMe);
+
 				if(rememberMeCheck.isChecked()){
 					SafeFolder.Instance().User().Account().setUsername(username);
 					SafeFolder.Instance().User().Account().setPassword(password);
 					SafeFolder.Instance().User().Account().setRememberMe(rememberMe);
-				}else{
-					SafeFolder.Instance().User().Account().setUsername(username);
-					SafeFolder.Instance().User().Account().setPassword(password);
-
-					SafeFolder.Instance().User().Username(username);
-					SafeFolder.Instance().User().Password(password);
 				}
 
 				try {
@@ -119,8 +151,9 @@ public class LaunchActivity extends Activity {
 		if(originalListSize == 0){ // we have no files; check for log on
 			//ShowFileManager();
 			if(SafeFolder.Instance().User().IsLoggedIn()){
-				SafeFolder.Instance().Close();
+				//SafeFolder.Instance().Close();
 				_needToDetermineWhatToDo = false;
+				return;
 			}
 
 			_needToDetermineWhatToDo = true;

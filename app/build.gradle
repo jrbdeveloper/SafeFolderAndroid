@@ -1,16 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
+    compileSdkVersion 17
     buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId 'com.coretech.safefolder.safefolder'
         minSdkVersion 15
-        targetSdkVersion 20
+        targetSdkVersion 17
         versionCode 1
         versionName '1.0'
     }
     buildTypes {
+        debug{
+
+        }
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -20,6 +23,12 @@ android {
         }
     }
     productFlavors {
+        free {
+
+        }
+        pro{
+
+        }
     }
 
     dexOptions {

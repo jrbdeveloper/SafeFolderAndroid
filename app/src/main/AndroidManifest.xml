@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.coretech.safefolder.safefolder" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.coretech.safefolder.safefolder" >
 
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <supports-screens android:smallScreens="true"/>
+    <supports-screens android:normalScreens="true"/>
+    <supports-screens android:anyDensity="true"/>
+    <supports-screens android:resizeable="true" android:anyDensity="true"/>
+
     <application
-        android:name=".SafeFolder"
+        android:name="SafeFolder"
         android:allowBackup="true"
         android:icon="@drawable/safefolder"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:enabled="true" >
         <activity
             android:name=".LaunchActivity"
             android:label="@string/app_name" >
             <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-
+                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
-
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>

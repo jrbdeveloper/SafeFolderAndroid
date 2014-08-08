@@ -13,8 +13,6 @@ import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 import com.encrypticslibrary.impl.AccountContext;
 import com.encrypticslibrary.impl.AccountRegistration;
 
-import java.util.List;
-
 /**
  * Created by john bales on 8/1/2014.
  */
@@ -60,7 +58,7 @@ public class Account {
 
 		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_username);
-		String username = sharedPref.getString(SafeFolder.Instance().getString(R.string.the_username), defaultValue);
+		String username = sharedPref.getString("the_username", defaultValue);
 
 		return username;
 	}
@@ -68,7 +66,7 @@ public class Account {
 	public void setUsername(String username){
 		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SafeFolder.Instance().getString(R.string.the_username), username);
+		editor.putString("the_username", username);
 		editor.commit();
 	}
 
@@ -79,7 +77,7 @@ public class Account {
 	public String getPassword(){
 		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_password);
-		String password = sharedPref.getString(SafeFolder.Instance().getString(R.string.the_password), defaultValue);
+		String password = sharedPref.getString("the_password", defaultValue);
 
 		return password;
 	}
@@ -87,14 +85,14 @@ public class Account {
 	public void setPassword(String password){
 		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SafeFolder.Instance().getString(R.string.the_password), password);
+		editor.putString("the_password", password);
 		editor.commit();
 	}
 
 	public boolean getRememberMe(){
 		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.remember_me_default);
-		String rememberMe = sharedPref.getString(SafeFolder.Instance().getString(R.string.remember_me), defaultValue);
+		String rememberMe = sharedPref.getString("remember_me", defaultValue);
 
 		return rememberMe == "yes";
 	}
@@ -104,7 +102,7 @@ public class Account {
 
 		SharedPreferences sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SafeFolder.Instance().getString(R.string.remember_me), _remember);
+		editor.putString("remember_me", _remember);
 		editor.commit();
 	}
 

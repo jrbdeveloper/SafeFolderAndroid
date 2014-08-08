@@ -36,12 +36,12 @@
 
     <!-- User Account Preferences -->
     <string name="default_username">michael.sneen@gmail.com</string>
-    <string name="the_username"></string>
+    <string name="the_username"/>
 
     <string name="default_password">password</string>
-    <string name="the_password"></string>
+    <string name="the_password"/>
 
     <string name="remember_me_default">yes</string>
-    <string name="remember_me"></string>
+    <string name="remember_me"/>
 
 </resources>
