@@ -27,7 +27,6 @@ public class LaunchActivity extends Activity {
 	ProgressDialog _progress;
 	//endregion
 
-	Context mContext = LaunchActivity.this;
 	SharedPreferences appPreferences;
 	boolean isAppInstalled = false;
 
@@ -74,15 +73,16 @@ public class LaunchActivity extends Activity {
 		final EditText passwordText = (EditText) findViewById(R.id.passwordText);
 		final CheckBox rememberMeCheck = (CheckBox) findViewById(R.id.remember_me_check);
 
-		if(SafeFolder.Instance().User().Account().getRememberMe()){
-			usernameText.setText(SafeFolder.Instance().User().Account().getUsername());
-			passwordText.setText(SafeFolder.Instance().User().Account().getPassword());
-			rememberMeCheck.setChecked(true);
-		}
-
 		if(_needToDetermineWhatToDo){
 			DetermineWhatToDo();
 		}
+
+		//boolean rememberMe = SafeFolder.Instance().User().Account().getRememberMe();
+		//if(rememberMe){
+			usernameText.setText(SafeFolder.Instance().User().Account().getUsername());
+			passwordText.setText(SafeFolder.Instance().User().Account().getPassword());
+			rememberMeCheck.setChecked(true);
+		//}
 
 		signInButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
