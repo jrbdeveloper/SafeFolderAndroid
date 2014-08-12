@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +45,8 @@ public class EncryptActivity extends Activity {
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
 		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
+        ImageView minusIcon = (ImageView) findViewById(R.id.minus);
+
         final Button sendViaButton = (Button) findViewById(R.id.send_via);
         final Button encryptButton = (Button)findViewById(R.id.encrypt);
 
@@ -71,17 +74,16 @@ public class EncryptActivity extends Activity {
 
 		removeEmailButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				if(emailListViewSelectedIndex[0] > -1) {
-					SafeFolder.Instance().Email().Collection().remove(emailListViewSelectedIndex[0]);
-					emailListViewSelectedIndex[0] = -1;
-					emailTextBox.setText("");
+                RemoveEmailFromList(emailListViewSelectedIndex, emailTextBox, emailListView);
+            }
+        });
 
-					Bind(emailListView);
-				}else {
-					Toast.makeText(SafeFolder.Instance().getApplicationContext(), "Please select an item to remove.", Toast.LENGTH_LONG).show();
-				}
-			}
-		});
+        if(minusIcon != null){
+            minusIcon.setOnClickListener(new ImageView.OnClickListener(){public void onClick(View v){
+                RemoveEmailFromList(emailListViewSelectedIndex, emailTextBox, emailListView);
+            }
+            });
+        }
 
 		sendViaButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
@@ -116,7 +118,19 @@ public class EncryptActivity extends Activity {
 		});
     }
 
-	/**
+    public void RemoveEmailFromList(int[] emailListViewSelectedIndex, TextView emailTextBox, ListView emailListView) {
+        if(emailListViewSelectedIndex[0] > -1) {
+            SafeFolder.Instance().Email().Collection().remove(emailListViewSelectedIndex[0]);
+            emailListViewSelectedIndex[0] = -1;
+            emailTextBox.setText("");
+
+            Bind(emailListView);
+        }else {
+            Toast.makeText(SafeFolder.Instance().getApplicationContext(), "Please select an item to remove.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
 	 * Method that binds the array adapter to the list view control
 	 * @param emailListView
 	 */
