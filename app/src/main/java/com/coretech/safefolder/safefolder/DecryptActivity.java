@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.coretech.safefolder.safefolder.entities.ListItem;
+
 import java.util.ArrayList;
 
 public class DecryptActivity extends Activity {
@@ -45,8 +48,8 @@ public class DecryptActivity extends Activity {
 
 	private void addEncryptedFilesToList(){
 		if(SafeFolder.Instance().File().Collection().size() > 0){
-			for(String item : SafeFolder.Instance().File().Collection()){
-				_listArray.add(SafeFolder.Instance().File().getNameFromPath(item.toString()));
+			for(ListItem item : SafeFolder.Instance().File().Collection()){
+				_listArray.add(SafeFolder.Instance().File().getNameFromPath(item.getText()));
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package com.coretech.safefolder.safefolder.services;
 
 import android.os.AsyncTask;
 import com.coretech.safefolder.safefolder.SafeFolder;
+import com.coretech.safefolder.safefolder.entities.ListItem;
 import com.coretech.safefolder.safefolder.entities.User;
 import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 import com.encrypticslibrary.impl.SafeFile;
@@ -31,11 +32,11 @@ public class Security {
 	//endregion
 
 	//region Encryption
-	public void EncryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
+	public void EncryptFiles(ArrayList<ListItem> fileList, ArrayList<ListItem> emailList){
 		new EncryptTask(this).execute(fileList, emailList);
 	}
 
-	private static class EncryptTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode> {
+	private static class EncryptTask extends AsyncTask<List<ListItem>, Void, EncrypticsResponseCode> {
 
 		//EncryptService callback;
 
@@ -44,10 +45,10 @@ public class Security {
 		}
 
 		@Override
-		protected EncrypticsResponseCode doInBackground(List<String>... lists) {
+		protected EncrypticsResponseCode doInBackground(List<ListItem>... lists) {
 
-			List<String> fileList = lists[0];
-			List<String> recipientList = lists[1];
+			List<ListItem> fileList = lists[0];
+			List<ListItem> recipientList = lists[1];
 
 			// Authenticate the user
 			if(!SafeFolder.Instance().User().IsLoggedIn()){
@@ -64,9 +65,9 @@ public class Security {
 
 			try {
 
-				for(String item : fileList) {
-					if(!item.contains(".safe")){
-						File file = new File(item);
+				for(ListItem item : fileList) {
+					if(!item.getText().contains(".safe")){
+						File file = new File(item.getText());
 						FileInputStream fis = new FileInputStream(file);
 						OutputStream outputStream = new FileOutputStream(item + ".safe");
 
@@ -81,8 +82,8 @@ public class Security {
 								.setSubject("not used")
 								.addContent(fis, (int)file.length()); // Adding your content here!
 
-						for(String recipient : recipientList) {
-							builder.addRecipient(recipient);
+						for(ListItem recipient : recipientList) {
+							builder.addRecipient(recipient.getText());
 						}
 
 						// Building the .SAFE file is another network operation, keeping it in the background would be best
@@ -117,19 +118,19 @@ public class Security {
 	//endregion
 
 	//region Decryption
-	public void DecryptFiles(ArrayList<String> fileList, ArrayList<String> emailList){
+	public void DecryptFiles(ArrayList<ListItem> fileList, ArrayList<ListItem> emailList){
 		new DecryptTask(this).execute(fileList, emailList);
 	}
 
-	private static class DecryptTask extends AsyncTask<List<String>, Void, EncrypticsResponseCode>{
+	private static class DecryptTask extends AsyncTask<List<ListItem>, Void, EncrypticsResponseCode>{
 
 		public DecryptTask(Security service){
 		}
 
 		@Override
-		protected EncrypticsResponseCode doInBackground(List<String>... lists){
-			List<String> fileList = lists[0];
-			List<String> recipientList = lists[1];
+		protected EncrypticsResponseCode doInBackground(List<ListItem>... lists){
+			List<ListItem> fileList = lists[0];
+			List<ListItem> recipientList = lists[1];
 
 			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
 			User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
@@ -143,8 +144,8 @@ public class Security {
 			EncrypticsResponseCode decryptResponseCode = EncrypticsResponseCode.UNKNOWN;
 
 			try{
-				for(String item : fileList){
-					File file = new File(item);
+				for(ListItem item : fileList){
+					File file = new File(item.getText());
 					FileInputStream fis = new FileInputStream(file);
 					byte fileContent[] = new byte[(int)file.length()];
 
@@ -159,7 +160,7 @@ public class Security {
 						if(safeFile.isDecrypted()) {
 
 							try{
-								String path = item.substring(0,item.lastIndexOf('.'));
+								String path = item.getText().substring(0,item.getText().lastIndexOf('.'));
 								com.encrypticslibrary.impl.ContentBlob blob = safeFile.getBlob(0);
 								InputStream inputStream = blob.getContent();
 								OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(path));

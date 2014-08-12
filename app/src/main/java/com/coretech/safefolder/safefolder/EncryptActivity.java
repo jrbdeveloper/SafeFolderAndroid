@@ -12,10 +12,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coretech.safefolder.safefolder.entities.ListItem;
+import com.coretech.safefolder.safefolder.utilities.ListAdapter;
+
 public class EncryptActivity extends Activity {
 
 	//region Private members
-    private ArrayAdapter<String> _emailListViewAdapter;
+    //private ArrayAdapter<String> _emailListViewAdapter;
+    private ListAdapter _emailListViewAdapter;
 	//endregion
 
 	//region Constructor
@@ -37,7 +41,8 @@ public class EncryptActivity extends Activity {
 		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
 		emailListView.setSelection(-1);
 
-		_emailListViewAdapter = new ArrayAdapter<String>(SafeFolder.Instance().getCurrentActivity(), android.R.layout.simple_expandable_list_item_1, SafeFolder.Instance().Email().Collection());
+		//_emailListViewAdapter = new ArrayAdapter<String>(SafeFolder.Instance().getCurrentActivity(), android.R.layout.simple_expandable_list_item_1, SafeFolder.Instance().Email().Collection());
+        _emailListViewAdapter = new ListAdapter(EncryptActivity.this, SafeFolder.Instance().Email().Collection());
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
 		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
@@ -51,12 +56,14 @@ public class EncryptActivity extends Activity {
             public void onClick(View v){
                 String emailAddress = emailTextBox.getText().toString();
 				emailTextBox.setText("");
+                ListItem item = new ListItem();
+                item.setText(emailAddress);
 
                 // Take the text from the box and add it to the list view
                 if(emailListViewSelectedIndex[0] < 0){
-					SafeFolder.Instance().Email().Collection().add(emailAddress);
+					SafeFolder.Instance().Email().Collection().add(item);
 				}else{
-					SafeFolder.Instance().Email().Collection().set(emailListViewSelectedIndex[0], emailAddress);
+					SafeFolder.Instance().Email().Collection().set(emailListViewSelectedIndex[0], item);
 					emailListViewSelectedIndex[0] = -1;
 				}
 
@@ -88,6 +95,7 @@ public class EncryptActivity extends Activity {
 				});*/
 
 				sendViaButton.setEnabled(false);
+
 				SafeFolder.Instance().Security().EncryptFiles(SafeFolder.Instance().File().Collection(), SafeFolder.Instance().Email().Collection());
 				sendViaButton.setEnabled(true);
 			}

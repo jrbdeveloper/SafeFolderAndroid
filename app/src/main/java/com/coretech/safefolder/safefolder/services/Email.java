@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-import com.coretech.safefolder.safefolder.SafeFolder;
+
+import com.coretech.safefolder.safefolder.entities.ListItem;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -14,17 +16,17 @@ import java.util.ArrayList;
 public class Email {
 
 	//region Private Members
-	private ArrayList<String> _collection;
+	private ArrayList<ListItem> _collection;
 	//endregion
 
 	//region Public Members
 	//endregion
 
-	public ArrayList<String> Collection(){
+	public ArrayList<ListItem> Collection(){
 		return _collection;
 	}
 
-	public void Collection(ArrayList<String> collection){
+	public void Collection(ArrayList<ListItem> collection){
 		if(collection.size() > 0){
 			_collection = collection;
 		}
@@ -33,7 +35,7 @@ public class Email {
 	//region Constructor
 	public Email(){
 		if(_collection == null){
-			_collection = new ArrayList<String>();
+			_collection = new ArrayList<ListItem>();
 		}
 	}
 	//endregion

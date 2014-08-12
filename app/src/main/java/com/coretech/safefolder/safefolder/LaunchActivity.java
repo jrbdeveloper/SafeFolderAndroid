@@ -18,6 +18,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.coretech.safefolder.safefolder.entities.ListItem;
+
 import java.util.List;
 
 public class LaunchActivity extends Activity {
@@ -141,8 +144,8 @@ public class LaunchActivity extends Activity {
 		int originalListSize = SafeFolder.Instance().File().Collection().size();
 
 		if(originalListSize > 0) {
-			for(String item : SafeFolder.Instance().File().Collection()){
-				if(item.contains(".safe")){
+			for(ListItem item : SafeFolder.Instance().File().Collection()){
+				if(item.getText().contains(".safe")){
 					count ++;
 				}
 			}
