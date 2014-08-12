@@ -18,7 +18,6 @@ import com.coretech.safefolder.safefolder.utilities.ListAdapter;
 public class EncryptActivity extends Activity {
 
 	//region Private members
-    //private ArrayAdapter<String> _emailListViewAdapter;
     private ListAdapter _emailListViewAdapter;
 	//endregion
 
@@ -41,7 +40,6 @@ public class EncryptActivity extends Activity {
 		final ListView emailListView = (ListView) findViewById(R.id.emailListView);
 		emailListView.setSelection(-1);
 
-		//_emailListViewAdapter = new ArrayAdapter<String>(SafeFolder.Instance().getCurrentActivity(), android.R.layout.simple_expandable_list_item_1, SafeFolder.Instance().Email().Collection());
         _emailListViewAdapter = new ListAdapter(EncryptActivity.this, SafeFolder.Instance().Email().Collection());
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
