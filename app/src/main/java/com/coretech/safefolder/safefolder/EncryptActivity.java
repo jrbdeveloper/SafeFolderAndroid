@@ -45,7 +45,6 @@ public class EncryptActivity extends Activity {
 
         Button addEmailButton = (Button) findViewById(R.id.add_email);
 		Button removeEmailButton = (Button) findViewById(R.id.remove_email);
-        ImageView minusIcon = (ImageView) findViewById(R.id.minus);
 
         final Button sendViaButton = (Button) findViewById(R.id.send_via);
         final Button encryptButton = (Button)findViewById(R.id.encrypt);
@@ -77,13 +76,6 @@ public class EncryptActivity extends Activity {
                 RemoveEmailFromList(emailListViewSelectedIndex, emailTextBox, emailListView);
             }
         });
-
-        if(minusIcon != null){
-            minusIcon.setOnClickListener(new ImageView.OnClickListener(){public void onClick(View v){
-                RemoveEmailFromList(emailListViewSelectedIndex, emailTextBox, emailListView);
-            }
-            });
-        }
 
 		sendViaButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
