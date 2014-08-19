@@ -161,7 +161,10 @@ public class Account {
 				SafeFolder.Instance().User().IsLoggedIn(false);
 			}
 
-			_progress.dismiss();
+			if(_progress != null){
+				_progress.dismiss();
+			}
+
 			_loginResponse = code;
 			SafeFolder.Instance().Close();
 		}

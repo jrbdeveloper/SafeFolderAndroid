@@ -2,7 +2,6 @@ package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,20 +17,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.coretech.safefolder.safefolder.entities.ListItem;
-
 import java.util.List;
+import com.coretech.safefolder.safefolder.entities.ListItem;
 
 public class LaunchActivity extends Activity {
 
 	//region Private Members
 	private boolean _needToDetermineWhatToDo = true;
 	ProgressDialog _progress;
+	SharedPreferences _appPreferences;
+	boolean _isAppInstalled = false;
 	//endregion
-
-	SharedPreferences appPreferences;
-	boolean isAppInstalled = false;
 
 	//region Constructor
 	public LaunchActivity(){
@@ -44,30 +40,9 @@ public class LaunchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
-		//check if application is running first time, only then create shorcut
-		appPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		isAppInstalled = appPreferences.getBoolean("isAppInstalled",false);
-		if(isAppInstalled==false) {
-
-			// create short code
-			Intent shortcutIntent = new Intent(getApplicationContext(), LaunchActivity.class);
-			shortcutIntent.setAction(Intent.ACTION_MAIN);
-			Intent intent = new Intent();
-			intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Safe Folder");
-			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.safefolder));
-			intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-			getApplicationContext().sendBroadcast(intent);
-
-			//Make preference true
-			SharedPreferences.Editor editor = appPreferences.edit();
-			editor.putBoolean("isAppInstalled", true);
-			editor.commit();
-		}
-
-		_progress = new ProgressDialog(this);
-		_progress.setMessage("Authenticating, please wait...");
-		_progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		CreateShortcut();
+		SafeFolder.Instance().File().CreateSafeFolders();
+		InitializeProgressSpinner();
 
 		Button registerButton = (Button) findViewById(R.id.register_button);
 		final Button signInButton = (Button) findViewById(R.id.sign_in_button);
@@ -182,6 +157,35 @@ public class LaunchActivity extends Activity {
 	private void ShowRegistrationActivity(){
 		Intent showRegister = new Intent(this, RegisterActivity.class);
 		startActivity(showRegister);
+	}
+
+	private void InitializeProgressSpinner(){
+		_progress = new ProgressDialog(this);
+		_progress.setMessage("Authenticating, please wait...");
+		_progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	}
+
+	private void CreateShortcut(){
+		//check if application is running first time, only then create shorcut
+		_appPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		_isAppInstalled = _appPreferences.getBoolean("isAppInstalled",false);
+		if(_isAppInstalled==false) {
+
+			// create short code
+			Intent shortcutIntent = new Intent(getApplicationContext(), LaunchActivity.class);
+			shortcutIntent.setAction(Intent.ACTION_MAIN);
+			Intent intent = new Intent();
+			intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Safe Folder");
+			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.safefolder));
+			intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+			getApplicationContext().sendBroadcast(intent);
+
+			//Make preference true
+			SharedPreferences.Editor editor = _appPreferences.edit();
+			editor.putBoolean("isAppInstalled", true);
+			editor.commit();
+		}
 	}
 
 	/**

@@ -8,7 +8,7 @@ import android.os.Build;
 import com.coretech.safefolder.safefolder.entities.User;
 import com.coretech.safefolder.safefolder.services.Email;
 import com.coretech.safefolder.safefolder.services.Security;
-import com.coretech.safefolder.safefolder.services.File;
+import com.coretech.safefolder.safefolder.services.SafeFile;
 
 /**
  * Created by john bales on 7/28/2014.
@@ -18,10 +18,11 @@ public class SafeFolder extends Application {
 	//region Private Members
 	private static SafeFolder _instance;
 	private Activity _currentActivity;
-	private File _file;
+	private SafeFile _file;
 	private Email _email;
 	private Security _security;
 	private User _user;
+	private String _safeExtension;
 	//endregion
 
 	//region Constructor
@@ -48,6 +49,18 @@ public class SafeFolder extends Application {
 	//endregion
 
 	//region Getters & Setters
+	public String getSafeExtension(){
+		if(_safeExtension == null){
+			_safeExtension = ".safe";
+		}
+
+		return _safeExtension;
+	}
+
+	public void setSafeExtension(String extension){
+		_safeExtension = extension;
+	}
+
 	public static SafeFolder Instance(){
 		return _instance;
 	}
@@ -62,9 +75,9 @@ public class SafeFolder extends Application {
 		return _currentActivity;
 	}
 
-	public File File(){
+	public SafeFile File(){
 		if(_file == null) {
-			_file = new File();
+			_file = new SafeFile();
 		}
 
 		return _file;

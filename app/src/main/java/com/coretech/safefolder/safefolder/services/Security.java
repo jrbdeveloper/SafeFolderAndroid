@@ -66,10 +66,10 @@ public class Security {
 			try {
 
 				for(ListItem item : fileList) {
-					if(!item.getText().contains(".safe")){
+					if(!item.getText().contains(SafeFolder.Instance().getSafeExtension())){
 						File file = new File(item.getText());
 						FileInputStream fis = new FileInputStream(file);
-						OutputStream outputStream = new FileOutputStream(item + ".safe");
+						OutputStream outputStream = new FileOutputStream(item + SafeFolder.Instance().getSafeExtension());
 
 						SafeFile.Builder builder = new SafeFile.Builder();
 
@@ -107,6 +107,17 @@ public class Security {
 
 				SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection());
 
+				for(ListItem item : SafeFolder.Instance().File().Collection()){
+					try{
+						SafeFolder.Instance().File().Move(new File(item.getText()).getName(), "encrypt");
+
+						// Remove the file as we don't need it here after the move
+						File fileToDelete = new File(item.getText());
+						fileToDelete.delete();
+					}catch(IOException ex){
+						ex.printStackTrace();
+					}
+				}
 			} else {
 				// TODO handle the encryptics exceptions here
 				//Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
@@ -132,18 +143,23 @@ public class Security {
 			List<ListItem> fileList = lists[0];
 			List<ListItem> recipientList = lists[1];
 
-			EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
-			User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
-			loginResponseCode = SafeFolder.Instance().User().Account().Authenticate(null);
+			// Authenticate the user
+			if(!SafeFolder.Instance().User().IsLoggedIn()){
+				EncrypticsResponseCode loginResponseCode = EncrypticsResponseCode.LOGIN_DENIED;
+				User user = new User(SafeFolder.Instance().User().Account().getUsername(), SafeFolder.Instance().User().Account().getPassword());
+				loginResponseCode = SafeFolder.Instance().User().Account().Authenticate(null);
 
-			//TODO How will you handle login failure?
-			if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
-				return loginResponseCode;
+				if(EncrypticsResponseCode.SUCCESS != loginResponseCode) {
+					return loginResponseCode;
+				}
 			}
 
 			EncrypticsResponseCode decryptResponseCode = EncrypticsResponseCode.UNKNOWN;
 
 			try{
+				// clear the file list so we can reuse it below
+				//SafeFolder.Instance().File().Collection().clear();
+
 				for(ListItem item : fileList){
 					File file = new File(item.getText());
 					FileInputStream fis = new FileInputStream(file);
@@ -175,6 +191,11 @@ public class Security {
 								if(outputStream != null){
 									outputStream.close();
 								}
+
+								// Add the unsafe file to a list
+								ListItem newItem = new ListItem();
+								newItem.setText(path);
+								SafeFolder.Instance().File().UnsafeFiles().add(newItem);
 							}catch(IOException e){
 								e.printStackTrace();
 							}catch(NullPointerException ex){
@@ -194,6 +215,19 @@ public class Security {
 		protected void onPostExecute(EncrypticsResponseCode code){
 			if(EncrypticsResponseCode.SUCCESS == code){
 				//Log.d("EncryptService", "Successfully logged in and decrypt .SAFE files.");
+
+				for(ListItem item : SafeFolder.Instance().File().UnsafeFiles()){
+					try{
+						File currentFile = new File(item.getText());
+						SafeFolder.Instance().File().Move(currentFile.getName(), "decrypt");
+
+						// Remove the file as we don't need it here after the move
+						File fileToDelete = new File(item.getText());
+						fileToDelete.delete();
+					}catch(IOException ex){
+						ex.printStackTrace();
+					}
+				}
 			}else{
 				//Log.d("EncryptService", "Failed to login or decrypt .SAFE files: " + code);
 			}

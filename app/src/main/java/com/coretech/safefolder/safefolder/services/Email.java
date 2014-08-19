@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-
-import com.coretech.safefolder.safefolder.entities.ListItem;
-
 import java.io.File;
 import java.util.ArrayList;
+
+import com.coretech.safefolder.safefolder.SafeFolder;
+import com.coretech.safefolder.safefolder.entities.ListItem;
 
 /**
  * Created by john bales on 7/23/2014.
@@ -41,11 +41,11 @@ public class Email {
 	//endregion
 
 	//region Public Methods
-    public void Send(Activity mainActivity, ArrayList encryptedFileList, ArrayList emailList){
-        String toAddress = TextUtils.join(",", emailList);
+    public void Send(Activity mainActivity, ArrayList encryptedFileList, ArrayList<ListItem> emailList){
+        String toAddress = TextUtils.join(", ", emailList);
         String subject = "Safe Folder Security Notification";
         String body = "Attached are your encrypted files. Thank you for using Safe Folder";
-        ArrayList<String> attachmentPath = encryptedFileList;
+        ArrayList<ListItem> attachmentPath = encryptedFileList;
 
         try {
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
@@ -56,9 +56,11 @@ public class Email {
             //intent.setType("message/rfc822");
 			intent.setType("*/*");
 
+
+
             ArrayList<Uri> uri = new ArrayList<Uri>();
             for (int i = 0; i < attachmentPath.size(); i++) {
-                File file = new File(attachmentPath.get(i)+ ".safe");
+                File file = new File(attachmentPath.get(i).getText() + SafeFolder.Instance().getSafeExtension());
                 uri.add(Uri.fromFile(file));
             }
 
