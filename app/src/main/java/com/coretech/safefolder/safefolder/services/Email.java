@@ -19,18 +19,19 @@ public class Email {
 	private ArrayList<ListItem> _collection;
 	//endregion
 
-	//region Public Members
-	//endregion
-
+	//region Getters
 	public ArrayList<ListItem> Collection(){
 		return _collection;
 	}
+	//endregion
 
+	//region Setters
 	public void Collection(ArrayList<ListItem> collection){
 		if(collection.size() > 0){
 			_collection = collection;
 		}
 	}
+	//endregion
 
 	//region Constructor
 	public Email(){

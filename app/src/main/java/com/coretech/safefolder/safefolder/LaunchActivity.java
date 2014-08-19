@@ -35,10 +35,11 @@ public class LaunchActivity extends Activity {
 	}
 	//endregion
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launch);
+	//region Events
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_launch);
 
 		CreateShortcut();
 		SafeFolder.Instance().File().CreateSafeFolders();
@@ -57,9 +58,9 @@ public class LaunchActivity extends Activity {
 
 		//boolean rememberMe = SafeFolder.Instance().User().Account().getRememberMe();
 		//if(rememberMe){
-			usernameText.setText(SafeFolder.Instance().User().Account().getUsername());
-			passwordText.setText(SafeFolder.Instance().User().Account().getPassword());
-			rememberMeCheck.setChecked(true);
+		usernameText.setText(SafeFolder.Instance().User().Account().getUsername());
+		passwordText.setText(SafeFolder.Instance().User().Account().getPassword());
+		rememberMeCheck.setChecked(true);
 		//}
 
 		signInButton.setOnClickListener(new Button.OnClickListener(){
@@ -102,7 +103,7 @@ public class LaunchActivity extends Activity {
 				ShowRegistrationActivity();
 			}
 		});
-    }
+	}
 
 	@Override
 	protected void onStart() {
@@ -113,6 +114,30 @@ public class LaunchActivity extends Activity {
 		}
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.launch, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	//endregion
+
+	//region Public Methods
+	//endregion
+
+	//region Private Methods
 	private void DetermineWhatToDo(){
 		int count = 0;
 		SafeFolder.Instance().File().Collection(SafeFolder.Instance().File().GetCollection());
@@ -210,23 +235,5 @@ public class LaunchActivity extends Activity {
 			startActivity(Intent.createChooser(intent, "Open folder"));
 		}
 	}
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.launch, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	//endregion
 }

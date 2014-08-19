@@ -42,6 +42,7 @@ public class SafeFile {
 	}
 	//endregion
 
+	//region Getters & Setters
 	public ArrayList<ListItem> Collection(){
 		return _collection;
 	}
@@ -61,6 +62,7 @@ public class SafeFile {
 			_unsafeFiles = files;
 		}
 	}
+	//endregion
 
 	//region Public Methods
     //Call this from the encrypt and Send Button.  This method gets the file(s) that were selected in the previous app.
@@ -104,32 +106,6 @@ public class SafeFile {
 
 		return _collection;
     }
-
-	/**
-	 * Method that checks to see if there is an SDCard present
-	 * @return boolean
-	 */
-	private boolean isExternalStoragePresent() {
-
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) { // We can read and write the media
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) { // We can only read the media
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else { // Something else is wrong. It may be one of many other states, but all we need to know is we can neither read nor write
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
-		}
-		if (!((mExternalStorageAvailable) && (mExternalStorageWriteable))) {
-			Toast.makeText(SafeFolder.Instance().getApplicationContext(), "SD card not present", Toast.LENGTH_LONG).show();
-		}
-
-		return (mExternalStorageAvailable) && (mExternalStorageWriteable);
-	}
-	//endregion
 
 	/**
 	 * Method that creates the safe folder directory structure
@@ -194,12 +170,38 @@ public class SafeFile {
 		}
 	}
 
+	public String getNameFromPath(String input) {
+		String[] temp;
+		String delimeter = "/";
+		temp = input.split(delimeter);
+		return temp[temp.length - 1];
+	}
+	//endregion
+
 	//region Private Methods
-    public String getNameFromPath(String input) {
-        String[] temp;
-        String delimeter = "/";
-        temp = input.split(delimeter);
-        return temp[temp.length - 1];
-    }
+	/**
+	 * Method that checks to see if there is an SDCard present
+	 * @return boolean
+	 */
+	private boolean isExternalStoragePresent() {
+
+		boolean mExternalStorageAvailable = false;
+		boolean mExternalStorageWriteable = false;
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state)) { // We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) { // We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+		} else { // Something else is wrong. It may be one of many other states, but all we need to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+		if (!((mExternalStorageAvailable) && (mExternalStorageWriteable))) {
+			Toast.makeText(SafeFolder.Instance().getApplicationContext(), "SD card not present", Toast.LENGTH_LONG).show();
+		}
+
+		return (mExternalStorageAvailable) && (mExternalStorageWriteable);
+	}
 	//endregion
 }

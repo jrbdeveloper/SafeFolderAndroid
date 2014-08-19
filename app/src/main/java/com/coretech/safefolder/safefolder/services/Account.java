@@ -32,46 +32,13 @@ public class Account {
 	}
 	//endregion
 
-	//region Public Methods
-
+	//region Getters
 	/**
-	 * Method to register user accounts with the encryptics service
-	 * @param user
+	 * Method to get the encryptics account context
+	 * @return AccountContext
 	 */
-	public void RegisterAccount(User user){
-		AccountRegistration accountRegistration = new AccountRegistration(user.EmailAddress(), user.Password());
-		accountRegistration.activate(accountRegistration.getRequestID());
-	}
-
-	/**
-	 * Method to authenticate a user with the encryptics service
-	 * @return EncrypticsResponseCode
-	 */
-	public EncrypticsResponseCode Authenticate(ProgressDialog progress){
-
-		new LoginTask(progress).execute(SafeFolder.Instance().User().Username(), SafeFolder.Instance().User().Password());
-
-		return _loginResponse;
-	}
-
-	public void setUsername(String username){
-		SharedPreferences.Editor editor = _sharedPref.edit();
-		editor.putString("the_username", username);
-		editor.commit();
-	}
-
-	public void setPassword(String password){
-		SharedPreferences.Editor editor = _sharedPref.edit();
-		editor.putString("the_password", password);
-		editor.commit();
-	}
-
-	public void setRememberMe(boolean remember){
-		String _remember = (remember) ? "yes" : "no";
-
-		SharedPreferences.Editor editor = _sharedPref.edit();
-		editor.putString("remember_me", _remember);
-		editor.commit();
+	public AccountContext getContext(){
+		return _accountContext;
 	}
 
 	/**
@@ -102,13 +69,49 @@ public class Account {
 
 		return rememberMe == "yes";
 	}
+	//endregion
+
+	//region Setters
+	public void setUsername(String username){
+		SharedPreferences.Editor editor = _sharedPref.edit();
+		editor.putString("the_username", username);
+		editor.commit();
+	}
+
+	public void setPassword(String password){
+		SharedPreferences.Editor editor = _sharedPref.edit();
+		editor.putString("the_password", password);
+		editor.commit();
+	}
+
+	public void setRememberMe(boolean remember){
+		String _remember = (remember) ? "yes" : "no";
+
+		SharedPreferences.Editor editor = _sharedPref.edit();
+		editor.putString("remember_me", _remember);
+		editor.commit();
+	}
+	//endregion
+
+	//region Public Methods
+	/**
+	 * Method to register user accounts with the encryptics service
+	 * @param user
+	 */
+	public void RegisterAccount(User user){
+		AccountRegistration accountRegistration = new AccountRegistration(user.EmailAddress(), user.Password());
+		accountRegistration.activate(accountRegistration.getRequestID());
+	}
 
 	/**
-	 * Method to get the encryptics account context
-	 * @return AccountContext
+	 * Method to authenticate a user with the encryptics service
+	 * @return EncrypticsResponseCode
 	 */
-	public AccountContext getContext(){
-		return _accountContext;
+	public EncrypticsResponseCode Authenticate(ProgressDialog progress){
+
+		new LoginTask(progress).execute(SafeFolder.Instance().User().Username(), SafeFolder.Instance().User().Password());
+
+		return _loginResponse;
 	}
 	//endregion
 

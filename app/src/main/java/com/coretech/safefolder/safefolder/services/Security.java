@@ -109,11 +109,11 @@ public class Security {
 
 				for(ListItem item : SafeFolder.Instance().File().Collection()){
 					try{
-						SafeFolder.Instance().File().Move(new File(item.getText()).getName(), "encrypt");
+						File currentFile = new File(item.getText());
+						SafeFolder.Instance().File().Move(currentFile.getName(), "encrypt");
 
 						// Remove the file as we don't need it here after the move
-						File fileToDelete = new File(item.getText());
-						fileToDelete.delete();
+						currentFile.delete();
 					}catch(IOException ex){
 						ex.printStackTrace();
 					}
@@ -222,8 +222,7 @@ public class Security {
 						SafeFolder.Instance().File().Move(currentFile.getName(), "decrypt");
 
 						// Remove the file as we don't need it here after the move
-						File fileToDelete = new File(item.getText());
-						fileToDelete.delete();
+						currentFile.delete();
 					}catch(IOException ex){
 						ex.printStackTrace();
 					}

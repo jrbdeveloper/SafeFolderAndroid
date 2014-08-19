@@ -48,27 +48,19 @@ public class SafeFolder extends Application {
 	}
 	//endregion
 
-	//region Getters & Setters
+	//region Singleton
+	public static SafeFolder Instance(){
+		return _instance;
+	}
+	//endregion
+
+	//region Getters
 	public String getSafeExtension(){
 		if(_safeExtension == null){
 			_safeExtension = ".safe";
 		}
 
 		return _safeExtension;
-	}
-
-	public void setSafeExtension(String extension){
-		_safeExtension = extension;
-	}
-
-	public static SafeFolder Instance(){
-		return _instance;
-	}
-
-	public void setCurrentActivity(Activity activity){
-		if(activity != null){
-			_currentActivity = activity;
-		}
 	}
 
 	public Activity getCurrentActivity(){
@@ -105,6 +97,18 @@ public class SafeFolder extends Application {
 		}
 
 		return _user;
+	}
+	//endregion
+
+	//region Setters
+	public void setSafeExtension(String extension){
+		_safeExtension = extension;
+	}
+
+	public void setCurrentActivity(Activity activity){
+		if(activity != null){
+			_currentActivity = activity;
+		}
 	}
 	//endregion
 
