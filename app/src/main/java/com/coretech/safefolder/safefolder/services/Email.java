@@ -49,9 +49,10 @@ public class Email {
         ArrayList<ListItem> attachmentPath = encryptedFileList;
 
         try {
-			ArrayList<String> newEmailList = new ArrayList<String>();
-			for (ListItem email : emailList){
-				newEmailList.add(email.getText());
+			String[] newEmailList = new String[emailList.size()];
+
+			for(int x = 0; x < emailList.size(); x++){
+				newEmailList[x] = emailList.get(x).getText();
 			}
 
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
