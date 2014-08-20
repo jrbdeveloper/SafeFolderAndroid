@@ -161,7 +161,6 @@ public class SafeFile {
 		}
 		finally {
 			if(source != null) {
-				sourceFile.delete();
 				source.close();
 			}
 			if(destination != null) {

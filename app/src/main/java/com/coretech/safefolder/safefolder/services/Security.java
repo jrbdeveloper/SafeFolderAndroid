@@ -105,19 +105,21 @@ public class Security {
 				//Log.d("EncryptService", "Successfully logged in and made .SAFE files.");
 				//callback.onEncrypticsResponse(code);
 
-				SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection());
-
-				for(ListItem item : SafeFolder.Instance().File().Collection()){
-					try{
-						File currentFile = new File(item.getText());
-						SafeFolder.Instance().File().Move(currentFile.getName(), "encrypt");
-
-						// Remove the file as we don't need it here after the move
-						currentFile.delete();
-					}catch(IOException ex){
-						ex.printStackTrace();
+				try{
+					for(ListItem item : SafeFolder.Instance().File().Collection()){
+						try{
+							File currentFile = new File(item.getText());
+							SafeFolder.Instance().File().Move(currentFile.getName(), "encrypt");
+						}catch(IOException ex){
+							ex.printStackTrace();
+						}
 					}
+
+					SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection());
+				}catch (Exception ex){
+					ex.printStackTrace();
 				}
+
 			} else {
 				// TODO handle the encryptics exceptions here
 				//Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);

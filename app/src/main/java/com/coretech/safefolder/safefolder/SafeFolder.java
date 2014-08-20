@@ -5,10 +5,13 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Build;
 
+import com.coretech.safefolder.safefolder.entities.ListItem;
 import com.coretech.safefolder.safefolder.entities.User;
 import com.coretech.safefolder.safefolder.services.Email;
 import com.coretech.safefolder.safefolder.services.Security;
 import com.coretech.safefolder.safefolder.services.SafeFile;
+
+import java.io.File;
 
 /**
  * Created by john bales on 7/28/2014.
@@ -41,8 +44,18 @@ public class SafeFolder extends Application {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void Close(){
 
+		if(SafeFolder.Instance().File().Collection().size() > 0){
+			for(ListItem item : SafeFolder.Instance().File().Collection()){
+
+				File fileToRemove = new File(item.getText() + SafeFolder.Instance().getSafeExtension());
+				if(fileToRemove.exists()){
+					fileToRemove.delete();
+				}
+			}
+		}
+
 		_file.Collection().clear();
-		//_email.Collection.clear();
+		//_email.Collection().clear();
 
 		getCurrentActivity().finishAffinity();
 	}

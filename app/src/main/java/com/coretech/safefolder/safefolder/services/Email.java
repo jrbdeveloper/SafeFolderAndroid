@@ -49,28 +49,32 @@ public class Email {
         ArrayList<ListItem> attachmentPath = encryptedFileList;
 
         try {
+			ArrayList<String> newEmailList = new ArrayList<String>();
+			for (ListItem email : emailList){
+				newEmailList.add(email.getText());
+			}
+
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[] { toAddress });
+            intent.putExtra(Intent.EXTRA_EMAIL, newEmailList);
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             intent.putExtra(Intent.EXTRA_TEXT, body);
             //intent.setType("message/rfc822");
 			intent.setType("*/*");
 
-
-
             ArrayList<Uri> uri = new ArrayList<Uri>();
             for (int i = 0; i < attachmentPath.size(); i++) {
-                File file = new File(attachmentPath.get(i).getText() + SafeFolder.Instance().getSafeExtension());
+                File file = new File(attachmentPath.get(i).getText().replace("unsafe","safe") + SafeFolder.Instance().getSafeExtension());
                 uri.add(Uri.fromFile(file));
             }
 
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uri);
 
             mainActivity.startActivity(Intent.createChooser(intent, "Choose an email application..."));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
+	}
 	//endregion
 }

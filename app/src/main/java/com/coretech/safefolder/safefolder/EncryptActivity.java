@@ -1,7 +1,9 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.Toast;
 
 import com.coretech.safefolder.safefolder.entities.ListItem;
 import com.coretech.safefolder.safefolder.utilities.ListAdapter;
+
+import java.io.File;
 
 public class EncryptActivity extends Activity {
 
@@ -127,7 +131,6 @@ public class EncryptActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	//endregion
 
 	//region Public Methods
 	public void RemoveEmailFromList(int[] emailListViewSelectedIndex, TextView emailTextBox, ListView emailListView) {
