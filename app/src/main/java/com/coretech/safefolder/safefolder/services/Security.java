@@ -32,16 +32,18 @@ public class Security {
 	//endregion
 
 	//region Encryption
-	public void EncryptFiles(ArrayList<ListItem> fileList, ArrayList<ListItem> emailList){
-		new EncryptTask(this).execute(fileList, emailList);
+	public void EncryptFiles(ArrayList<ListItem> fileList, ArrayList<ListItem> emailList, boolean sendEmail){
+		new EncryptTask(this, sendEmail).execute(fileList, emailList);
 	}
 
 	private static class EncryptTask extends AsyncTask<List<ListItem>, Void, EncrypticsResponseCode> {
 
+		boolean _sendEmail;
 		//EncryptService callback;
 
-		public EncryptTask(Security service) {
+		public EncryptTask(Security service, boolean sendEmail) {
 			//this.callback = service;
+			_sendEmail = sendEmail;
 		}
 
 		@Override
@@ -115,17 +117,19 @@ public class Security {
 						}
 					}
 
-					SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection());
+					if(_sendEmail){
+						SafeFolder.Instance().Email().Send(SafeFolder.Instance().getCurrentActivity(), SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection());
+					}
 				}catch (Exception ex){
 					ex.printStackTrace();
 				}
+
+				SafeFolder.Instance().Close();
 
 			} else {
 				// TODO handle the encryptics exceptions here
 				//Log.d("EncryptService", "Failed to login or make .SAFE files: " + code);
 			}
-
-			SafeFolder.Instance().Close();
 		}
 	}
 	//endregion

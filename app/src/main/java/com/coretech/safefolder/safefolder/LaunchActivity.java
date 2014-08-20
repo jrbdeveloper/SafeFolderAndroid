@@ -89,18 +89,17 @@ public class LaunchActivity extends Activity {
 					if(!SafeFolder.Instance().User().IsLoggedIn()){
 						Toast.makeText(SafeFolder.Instance().getApplicationContext(), "Error Logging In", Toast.LENGTH_LONG);
 					}
-
-					signInButton.setEnabled(true);
-
 				} catch (Exception e) {
 					e.printStackTrace();
+				}finally {
+					signInButton.setEnabled(true);
 				}
 			}
 		});
 
 		registerButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				ShowRegistrationActivity();
+				ShowActivity(ActivityType.Register);
 			}
 		});
 	}
@@ -111,6 +110,19 @@ public class LaunchActivity extends Activity {
 
 		if(SafeFolder.Instance().hasFiles()){
 			//DetermineWhatToDo();
+		}
+	}
+
+	@Override
+	protected void onResume(){
+		super.onResume();
+
+		try{
+			if(SafeFolder.Instance().User().IsLoggedIn()){
+				this.finish();
+			}
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 
@@ -154,34 +166,54 @@ public class LaunchActivity extends Activity {
 		if(originalListSize == 0){ // we have no files; check for log on
 			//ShowFileManager();
 			if(SafeFolder.Instance().User().IsLoggedIn()){
-				//SafeFolder.Instance().Close();
 				_needToDetermineWhatToDo = false;
 				return;
 			}
 
 			_needToDetermineWhatToDo = true;
 		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
-			ShowEncryptActivity();
+			ShowActivity(ActivityType.Encrypt);
 		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe
-			ShowDecryptActivity();
+			ShowActivity(ActivityType.Decrypt);
 		}else {
 			Toast.makeText(LaunchActivity.this, "You have mixed files...",  Toast.LENGTH_LONG).show();
 		}
 	}
 
-	private void ShowEncryptActivity(){
-		Intent showEncrypt = new Intent(this, EncryptActivity.class);
-		startActivity(showEncrypt);
-	}
+	/**
+	 * Method to centralize the job of showing an activity
+	 * @param activityType
+	 */
+	private void ShowActivity(ActivityType activityType){
 
-	private void ShowDecryptActivity(){
-		Intent showDecrypt = new Intent(this, DecryptActivity.class);
-		startActivity(showDecrypt);
-	}
+		try{
+			Intent intent = null;
 
-	private void ShowRegistrationActivity(){
-		Intent showRegister = new Intent(this, RegisterActivity.class);
-		startActivity(showRegister);
+			switch (activityType){
+				case Encrypt:
+					intent = new Intent(this, EncryptActivity.class);
+					break;
+
+				case Decrypt:
+					intent = new Intent(this, DecryptActivity.class);
+					break;
+
+				case Register:
+					intent = new Intent(this, RegisterActivity.class);
+					break;
+
+				//case FileManager:
+				//	intent = new Intent(this, EncryptActivity.class);
+				//	break;
+			}
+
+			if(intent != null){
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	private void InitializeProgressSpinner(){
@@ -200,6 +232,7 @@ public class LaunchActivity extends Activity {
 			Intent shortcutIntent = new Intent(getApplicationContext(), LaunchActivity.class);
 			shortcutIntent.setAction(Intent.ACTION_MAIN);
 			Intent intent = new Intent();
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
 			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Safe Folder");
 			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.safefolder));
@@ -220,6 +253,7 @@ public class LaunchActivity extends Activity {
 	private void ShowFileManager(){
 
 		Intent intent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		PackageManager packageManager = getPackageManager();
 		List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
 
@@ -234,6 +268,13 @@ public class LaunchActivity extends Activity {
 			intent.setDataAndType(uri, "*/*");
 			startActivity(Intent.createChooser(intent, "Open folder"));
 		}
+	}
+
+	private enum ActivityType{
+		Encrypt,
+		Decrypt,
+		Register,
+		FileManager
 	}
 	//endregion
 }

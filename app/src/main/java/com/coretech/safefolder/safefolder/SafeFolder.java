@@ -1,17 +1,14 @@
 package com.coretech.safefolder.safefolder;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
-import android.os.Build;
+import java.io.File;
 
 import com.coretech.safefolder.safefolder.entities.ListItem;
 import com.coretech.safefolder.safefolder.entities.User;
 import com.coretech.safefolder.safefolder.services.Email;
 import com.coretech.safefolder.safefolder.services.Security;
 import com.coretech.safefolder.safefolder.services.SafeFile;
-
-import java.io.File;
 
 /**
  * Created by john bales on 7/28/2014.
@@ -41,7 +38,6 @@ public class SafeFolder extends Application {
 		super.onCreate();
 	}
 
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void Close(){
 
 		if(SafeFolder.Instance().File().Collection().size() > 0){
@@ -54,10 +50,14 @@ public class SafeFolder extends Application {
 			}
 		}
 
-		_file.Collection().clear();
-		//_email.Collection().clear();
+		if(_file.Collection().size() > 0){
+			_file.Collection().clear();
+		}
 
-		getCurrentActivity().finishAffinity();
+		//getCurrentActivity().moveTaskToBack(true);
+		getCurrentActivity().finish();
+		//getCurrentActivity().finishActivity(0);
+		//System.exit(0);
 	}
 	//endregion
 

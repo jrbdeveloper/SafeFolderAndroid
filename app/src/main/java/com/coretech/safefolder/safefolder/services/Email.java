@@ -43,7 +43,6 @@ public class Email {
 
 	//region Public Methods
     public void Send(Activity mainActivity, ArrayList encryptedFileList, ArrayList<ListItem> emailList){
-        String toAddress = TextUtils.join(", ", emailList);
         String subject = "Safe Folder Security Notification";
         String body = "Attached are your encrypted files. Thank you for using Safe Folder";
         ArrayList<ListItem> attachmentPath = encryptedFileList;
@@ -56,6 +55,7 @@ public class Email {
 			}
 
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_EMAIL, newEmailList);
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);

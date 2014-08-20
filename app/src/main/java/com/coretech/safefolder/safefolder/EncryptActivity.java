@@ -90,8 +90,8 @@ public class EncryptActivity extends Activity {
 				});*/
 
 				sendViaButton.setEnabled(false);
-
-				SafeFolder.Instance().Security().EncryptFiles(SafeFolder.Instance().File().Collection(), SafeFolder.Instance().Email().Collection());
+				SafeFolder.Instance().Security().EncryptFiles(SafeFolder.Instance().File().Collection(), SafeFolder.Instance().Email().Collection(), true);
+				SafeFolder.Instance().getCurrentActivity().finish();
 				sendViaButton.setEnabled(true);
 			}
 		});
@@ -99,7 +99,8 @@ public class EncryptActivity extends Activity {
 		encryptButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
 				encryptButton.setEnabled(false);
-				SafeFolder.Instance().Security().EncryptFiles(SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection());
+				SafeFolder.Instance().Security().EncryptFiles(SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection(), false);
+				SafeFolder.Instance().getCurrentActivity().finish();
 				encryptButton.setEnabled(true);
 			}
 		});

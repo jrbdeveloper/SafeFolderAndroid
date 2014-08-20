@@ -130,7 +130,7 @@ public class Account {
 			String password = SafeFolder.Instance().User().Password();
 
 			AndroidAccountContextFactory factory = new AndroidAccountContextFactory(SafeFolder.Instance().getApplicationContext());
-			_accountContext =  factory.generateAccountContext(username, password);
+			_accountContext = factory.generateAccountContext(username, password);
 
 			EncrypticsResponseCode loginResponse = _accountContext.login();
 
