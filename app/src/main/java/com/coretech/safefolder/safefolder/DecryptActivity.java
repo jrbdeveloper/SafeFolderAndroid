@@ -72,6 +72,7 @@ public class DecryptActivity extends Activity {
 
 		if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null){
 			String filePath = getIntent().getData().getEncodedPath();
+
 			ListItem fileItem = new ListItem();
 			fileItem.setText(filePath);
 
@@ -84,7 +85,9 @@ public class DecryptActivity extends Activity {
 
 		if(SafeFolder.Instance().File().Collection().size() > 0){
 			for(ListItem item : SafeFolder.Instance().File().Collection()){
-				_listArray.add(SafeFolder.Instance().File().getNameFromPath(item.getText()));
+				if(!_listArray.contains(SafeFolder.Instance().File().getNameFromPath(item.getText()))){
+					_listArray.add(SafeFolder.Instance().File().getNameFromPath(item.getText()));
+				}
 			}
 		}
 	}
