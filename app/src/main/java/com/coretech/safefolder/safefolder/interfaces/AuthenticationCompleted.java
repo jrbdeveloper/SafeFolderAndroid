@@ -5,5 +5,4 @@ package com.coretech.safefolder.safefolder.interfaces;
  */
 public interface AuthenticationCompleted {
 	void onAuthenticationCompleted();
-
 }

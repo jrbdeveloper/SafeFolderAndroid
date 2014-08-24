@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.view.View;
 
-import com.coretech.safefolder.safefolder.EncryptActivity;
 import com.coretech.safefolder.safefolder.LaunchActivity;
 import com.coretech.safefolder.safefolder.SafeFolder;
 import com.coretech.safefolder.safefolder.entities.User;
@@ -22,11 +20,11 @@ import com.encrypticslibrary.impl.AccountRegistration;
  */
 public class Account {
 
-	public AuthenticationCompleted authenticationCompletedListener;
 	//region Private Members
 	private static AccountContext _accountContext;
 	private static EncrypticsResponseCode _loginResponse;
-	SharedPreferences _sharedPref;
+	private SharedPreferences _sharedPref;
+	private AuthenticationCompleted _authenticationCompletedListener;
 	//endregion
 
 	//region Constructor
@@ -35,10 +33,6 @@ public class Account {
 		if(_sharedPref == null){
 			_sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		}
-	}
-
-	public void setAuthenticationListener(AuthenticationCompleted authenticationCompletedListener){
-		this.authenticationCompletedListener = authenticationCompletedListener;
 	}
 	//endregion
 
@@ -85,6 +79,10 @@ public class Account {
 	//endregion
 
 	//region Setters
+	public void setAuthenticationListener(AuthenticationCompleted authenticationCompletedListener){
+		_authenticationCompletedListener = authenticationCompletedListener;
+	}
+
 	public void setUsername(String username){
 		SharedPreferences.Editor editor = _sharedPref.edit();
 		editor.putString("the_username", username);
@@ -130,7 +128,7 @@ public class Account {
 	 */
 	public EncrypticsResponseCode Authenticate(ProgressDialog progress){
 
-		new LoginTask(progress, authenticationCompletedListener).execute(SafeFolder.Instance().User().Username(), SafeFolder.Instance().User().Password());
+		new LoginTask(progress, _authenticationCompletedListener).execute(SafeFolder.Instance().User().Username(), SafeFolder.Instance().User().Password());
 
 		return _loginResponse;
 	}
@@ -138,11 +136,11 @@ public class Account {
 
 	private static class LoginTask extends AsyncTask<String, Void, EncrypticsResponseCode>{
 		private ProgressDialog _progress;
-		public AuthenticationCompleted authenticationCompletedListener;
+		private AuthenticationCompleted _authenticationCompletedListener;
 
 		public LoginTask(ProgressDialog progress, AuthenticationCompleted authenticationCompletedListener){
 			_progress = progress;
-			this.authenticationCompletedListener = authenticationCompletedListener;
+			_authenticationCompletedListener = authenticationCompletedListener;
 		}
 
 		@Override
@@ -191,7 +189,7 @@ public class Account {
 
 			_loginResponse = code;
 
-			authenticationCompletedListener.onAuthenticationCompleted();
+			_authenticationCompletedListener.onAuthenticationCompleted();
 
 			//TODO: May need to re-show the login activity here
 		}
