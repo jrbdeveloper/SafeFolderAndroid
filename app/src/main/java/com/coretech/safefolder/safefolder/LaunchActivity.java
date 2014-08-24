@@ -59,12 +59,13 @@ public class LaunchActivity extends Activity implements AuthenticationCompleted 
 			DetermineWhatToDo();
 		}
 
-		//boolean rememberMe = SafeFolder.Instance().User().Account().getRememberMe();
-		//if(rememberMe){
-		usernameText.setText(SafeFolder.Instance().User().Account().getUsername());
-		passwordText.setText(SafeFolder.Instance().User().Account().getPassword());
-		rememberMeCheck.setChecked(true);
-		//}
+		boolean rememberMe;
+		rememberMe = SafeFolder.Instance().User().Account().getRememberMe();
+		if(rememberMe){
+			usernameText.setText(SafeFolder.Instance().User().Account().getUsername());
+			passwordText.setText(SafeFolder.Instance().User().Account().getPassword());
+			rememberMeCheck.setChecked(true);
+		}
 
 		signInButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
@@ -80,10 +81,14 @@ public class LaunchActivity extends Activity implements AuthenticationCompleted 
 				SafeFolder.Instance().User().Password(password);
 				SafeFolder.Instance().User().RememberMe(rememberMe);
 
-				if(rememberMeCheck.isChecked()){
+				if(rememberMe){
 					SafeFolder.Instance().User().Account().setUsername(username);
 					SafeFolder.Instance().User().Account().setPassword(password);
-					SafeFolder.Instance().User().Account().setRememberMe(rememberMe);
+					SafeFolder.Instance().User().Account().setRememberMe(true);
+				}else{
+					SafeFolder.Instance().User().Account().setUsername("");
+					SafeFolder.Instance().User().Account().setPassword("");
+					SafeFolder.Instance().User().Account().setRememberMe(false);
 				}
 
 				try {

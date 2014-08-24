@@ -71,10 +71,14 @@ public class Account {
 
 	public boolean getRememberMe(){
 		//String defaultValue = SafeFolder.Instance().getResources().getString(R.string.remember_me_default);
-		String defaultValue = "";
+		String defaultValue = "no";
 		String rememberMe = _sharedPref.getString("remember_me", defaultValue);
 
-		return rememberMe == "yes";
+		if(rememberMe.equals("yes")){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	//endregion
 
