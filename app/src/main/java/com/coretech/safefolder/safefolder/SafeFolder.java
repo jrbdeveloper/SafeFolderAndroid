@@ -2,6 +2,11 @@ package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import java.io.File;
 
 import com.coretech.safefolder.safefolder.entities.ListItem;
@@ -23,6 +28,8 @@ public class SafeFolder extends Application {
 	private Security _security;
 	private User _user;
 	private String _safeExtension;
+	private SharedPreferences _appPreferences;
+	private boolean _appIsInstalled = false;
 	//endregion
 
 	//region Constructor
@@ -36,28 +43,20 @@ public class SafeFolder extends Application {
 	//region Events
 	public void onCreate(){
 		super.onCreate();
+
+		CreateShortcut();
+		_instance.File().CreateSafeFolders();
 	}
 
 	public void Close(){
 
-		if(SafeFolder.Instance().File().Collection().size() > 0){
-			for(ListItem item : SafeFolder.Instance().File().Collection()){
+		CleanupFiles();
 
-				File fileToRemove = new File(item.getText() + SafeFolder.Instance().getSafeExtension());
-				if(fileToRemove.exists()){
-					fileToRemove.delete();
-				}
-			}
+		if(_instance.Email().Collection().size() > 0){
+			_instance.Email().Collection().clear();
 		}
 
-		if(_file.Collection().size() > 0){
-			_file.Collection().clear();
-		}
-
-		//getCurrentActivity().moveTaskToBack(true);
 		getCurrentActivity().finish();
-		//getCurrentActivity().finishActivity(0);
-		//System.exit(0);
 	}
 	//endregion
 
@@ -68,6 +67,7 @@ public class SafeFolder extends Application {
 	//endregion
 
 	//region Getters
+
 	public String getSafeExtension(){
 		if(_safeExtension == null){
 			_safeExtension = ".safe";
@@ -111,9 +111,11 @@ public class SafeFolder extends Application {
 
 		return _user;
 	}
+
 	//endregion
 
 	//region Setters
+
 	public void setSafeExtension(String extension){
 		_safeExtension = extension;
 	}
@@ -127,7 +129,85 @@ public class SafeFolder extends Application {
 
 	//region Public Methods
 	public boolean hasFiles() {
-		return _file.Collection().size() > 0;
+		return _instance.File().Collection().size() > 0;
+	}
+
+	/**
+	 * Method to centralize the writing to logcat
+	 * @param message
+	 */
+	public void Log(String message){
+		if(message != null){
+			Log.d("SafeFolderIssue:", message);
+		}else{
+			Log.d("SafeFolderIssue:", "Unknown Error");
+		}
+	}
+
+	/**
+	 * Method to centralize the writing to logcat
+	 * @param tag
+	 * @param message
+	 */
+	public void Log(String tag, String message){
+		if(message != null){
+			Log.d(tag, message);
+		}else{
+			Log.d(tag, "Unknown Error");
+		}
+	}
+
+	public enum ActivityType{
+		Encrypt,
+		Decrypt,
+		Register,
+		FileManager,
+		Launch
+	}
+	//endregion
+
+	//region Private Methods
+	private void CreateShortcut(){
+		//check if application is running first time, only then create shorcut
+		_appPreferences = PreferenceManager.getDefaultSharedPreferences(_instance);
+		_appIsInstalled = _appPreferences.getBoolean("isAppInstalled",false);
+		if(!_appIsInstalled) {
+
+			// create short code
+			Intent shortcutIntent = new Intent(getApplicationContext(), LaunchActivity.class);
+			shortcutIntent.setAction(Intent.ACTION_MAIN);
+			Intent intent = new Intent();
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Safe Folder");
+			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.safefolder));
+			intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+			getApplicationContext().sendBroadcast(intent);
+
+			//Make preference true
+			SharedPreferences.Editor editor = _appPreferences.edit();
+			editor.putBoolean("isAppInstalled", true);
+			editor.commit();
+		}
+	}
+
+	/**
+	 * Method to cleanup files after an encryption or decryption
+	 */
+	public void CleanupFiles(){
+		if(_instance.File().Collection().size() > 0){
+			for(ListItem item : _instance.File().Collection()){
+
+				File fileToRemove = new File(item.getText() + getSafeExtension());
+				if(fileToRemove.exists()){
+					fileToRemove.delete();
+				}
+			}
+		}
+
+		if(_instance.File().Collection().size() > 0){
+			_instance.File().Collection().clear();
+		}
 	}
 	//endregion
 }

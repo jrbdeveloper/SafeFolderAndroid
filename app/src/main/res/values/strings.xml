@@ -7,7 +7,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="send_via">Send Via</string>
+    <string name="send_via">Encrypt &amp; Send</string>
     <string name="encrypt">Encrypt</string>
     <string name="decrypt">Decrypt</string>
     <string name="plus">+</string>

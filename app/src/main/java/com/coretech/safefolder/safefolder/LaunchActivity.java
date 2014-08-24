@@ -3,13 +3,11 @@ package com.coretech.safefolder.safefolder;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,14 +17,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 import java.util.List;
 import com.coretech.safefolder.safefolder.entities.ListItem;
+import com.coretech.safefolder.safefolder.interfaces.AuthenticationCompleted;
 
-public class LaunchActivity extends Activity {
+public class LaunchActivity extends Activity implements AuthenticationCompleted {
 
 	//region Private Members
 	private boolean _needToDetermineWhatToDo = true;
 	ProgressDialog _progress;
-	SharedPreferences _appPreferences;
-	boolean _isAppInstalled = false;
 	//endregion
 
 	//region Constructor
@@ -35,14 +32,20 @@ public class LaunchActivity extends Activity {
 	}
 	//endregion
 
+	//region Getters
+
+	//endregion
+
+	//region Setters
+
+	//endregion
+
 	//region Events
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_launch);
 
-		CreateShortcut();
-		SafeFolder.Instance().File().CreateSafeFolders();
 		InitializeProgressSpinner();
 
 		Button registerButton = (Button) findViewById(R.id.register_button);
@@ -84,10 +87,12 @@ public class LaunchActivity extends Activity {
 				}
 
 				try {
+					SafeFolder.Instance().User().Account().setAuthenticationListener(LaunchActivity.this);
 					SafeFolder.Instance().User().Account().Authenticate(_progress);
 
 					if(!SafeFolder.Instance().User().IsLoggedIn()){
 						Toast.makeText(SafeFolder.Instance().getApplicationContext(), "Error Logging In", Toast.LENGTH_LONG);
+						SafeFolder.Instance().Log("Error Logging In");
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -99,7 +104,7 @@ public class LaunchActivity extends Activity {
 
 		registerButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				ShowActivity(ActivityType.Register);
+				ShowActivity(SafeFolder.ActivityType.Register);
 			}
 		});
 	}
@@ -163,20 +168,25 @@ public class LaunchActivity extends Activity {
 			}
 		}
 
-		if(originalListSize == 0){ // we have no files; check for log on
-			//ShowFileManager();
-			if(SafeFolder.Instance().User().IsLoggedIn()){
-				_needToDetermineWhatToDo = false;
-				return;
-			}
+		if(SafeFolder.Instance().User().IsLoggedIn()){
 
-			_needToDetermineWhatToDo = true;
-		}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
-			ShowActivity(ActivityType.Encrypt);
-		}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe
-			ShowActivity(ActivityType.Decrypt);
-		}else {
-			Toast.makeText(LaunchActivity.this, "You have mixed files...",  Toast.LENGTH_LONG).show();
+			if(originalListSize == 0){ // we have no files; check for log on
+				//ShowFileManager();
+				if(SafeFolder.Instance().User().IsLoggedIn()){
+					_needToDetermineWhatToDo = false;
+					return;
+				}
+
+				_needToDetermineWhatToDo = true;
+			}else if(count == 0 && originalListSize > 0){ // We have files in the list but none are .safe files
+				ShowActivity(SafeFolder.ActivityType.Encrypt);
+			}else if(count >= originalListSize && originalListSize > 0){ // we have files and all are .safe
+				ShowActivity(SafeFolder.ActivityType.Decrypt);
+			}else {
+				Toast.makeText(LaunchActivity.this, "You have mixed files...",  Toast.LENGTH_LONG).show();
+			}
+		}else{
+			_needToDetermineWhatToDo = false;
 		}
 	}
 
@@ -184,7 +194,7 @@ public class LaunchActivity extends Activity {
 	 * Method to centralize the job of showing an activity
 	 * @param activityType
 	 */
-	private void ShowActivity(ActivityType activityType){
+	private void ShowActivity(SafeFolder.ActivityType activityType){
 
 		try{
 			Intent intent = null;
@@ -202,9 +212,12 @@ public class LaunchActivity extends Activity {
 					intent = new Intent(this, RegisterActivity.class);
 					break;
 
-				//case FileManager:
-				//	intent = new Intent(this, EncryptActivity.class);
-				//	break;
+				case Launch:
+					intent = new Intent(this, LaunchActivity.class);
+					break;
+
+				case FileManager:
+					break;
 			}
 
 			if(intent != null){
@@ -213,6 +226,7 @@ public class LaunchActivity extends Activity {
 			}
 		}catch(Exception e){
 			e.printStackTrace();
+			SafeFolder.Instance().Log(e.getMessage());
 		}
 	}
 
@@ -220,30 +234,6 @@ public class LaunchActivity extends Activity {
 		_progress = new ProgressDialog(this);
 		_progress.setMessage("Authenticating, please wait...");
 		_progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-	}
-
-	private void CreateShortcut(){
-		//check if application is running first time, only then create shorcut
-		_appPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		_isAppInstalled = _appPreferences.getBoolean("isAppInstalled",false);
-		if(_isAppInstalled==false) {
-
-			// create short code
-			Intent shortcutIntent = new Intent(getApplicationContext(), LaunchActivity.class);
-			shortcutIntent.setAction(Intent.ACTION_MAIN);
-			Intent intent = new Intent();
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Safe Folder");
-			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.safefolder));
-			intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-			getApplicationContext().sendBroadcast(intent);
-
-			//Make preference true
-			SharedPreferences.Editor editor = _appPreferences.edit();
-			editor.putBoolean("isAppInstalled", true);
-			editor.commit();
-		}
 	}
 
 	/**
@@ -270,11 +260,9 @@ public class LaunchActivity extends Activity {
 		}
 	}
 
-	private enum ActivityType{
-		Encrypt,
-		Decrypt,
-		Register,
-		FileManager
+	@Override
+	public void onAuthenticationCompleted() {
+		DetermineWhatToDo();
 	}
 	//endregion
 }

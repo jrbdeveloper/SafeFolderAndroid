@@ -2,12 +2,16 @@ package com.coretech.safefolder.safefolder.services;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.view.View;
 
-import com.coretech.safefolder.safefolder.R;
+import com.coretech.safefolder.safefolder.EncryptActivity;
+import com.coretech.safefolder.safefolder.LaunchActivity;
 import com.coretech.safefolder.safefolder.SafeFolder;
 import com.coretech.safefolder.safefolder.entities.User;
+import com.coretech.safefolder.safefolder.interfaces.AuthenticationCompleted;
 import com.encrypticsforandroid.encrypticsforandroid.AndroidAccountContextFactory;
 import com.encrypticslibrary.api.response.EncrypticsResponseCode;
 import com.encrypticslibrary.impl.AccountContext;
@@ -18,6 +22,7 @@ import com.encrypticslibrary.impl.AccountRegistration;
  */
 public class Account {
 
+	public AuthenticationCompleted authenticationCompletedListener;
 	//region Private Members
 	private static AccountContext _accountContext;
 	private static EncrypticsResponseCode _loginResponse;
@@ -26,9 +31,14 @@ public class Account {
 
 	//region Constructor
 	public Account(){
+
 		if(_sharedPref == null){
 			_sharedPref = SafeFolder.Instance().getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
 		}
+	}
+
+	public void setAuthenticationListener(AuthenticationCompleted authenticationCompletedListener){
+		this.authenticationCompletedListener = authenticationCompletedListener;
 	}
 	//endregion
 
@@ -46,7 +56,8 @@ public class Account {
 	 * @return String
 	 */
 	public String getUsername(){
-		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_username);
+		//String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_username);
+		String defaultValue = "";
 		String username = _sharedPref.getString("the_username", defaultValue);
 
 		return username;
@@ -57,14 +68,16 @@ public class Account {
 	 * @return String
 	 */
 	public String getPassword(){
-		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_password);
+		//String defaultValue = SafeFolder.Instance().getResources().getString(R.string.default_password);
+		String defaultValue = "";
 		String password = _sharedPref.getString("the_password", defaultValue);
 
 		return password;
 	}
 
 	public boolean getRememberMe(){
-		String defaultValue = SafeFolder.Instance().getResources().getString(R.string.remember_me_default);
+		//String defaultValue = SafeFolder.Instance().getResources().getString(R.string.remember_me_default);
+		String defaultValue = "";
 		String rememberMe = _sharedPref.getString("remember_me", defaultValue);
 
 		return rememberMe == "yes";
@@ -94,6 +107,14 @@ public class Account {
 	//endregion
 
 	//region Public Methods
+	public EncrypticsResponseCode ShowLogin(SafeFolder.ActivityType activityType){
+		Intent intent  = new Intent(SafeFolder.Instance().getApplicationContext(), LaunchActivity.class);
+		SafeFolder.Instance().getCurrentActivity().startActivity(intent);
+
+		SafeFolder.Instance().getCurrentActivity().finish();
+		return EncrypticsResponseCode.NOT_AUTHORIZED;
+	}
+
 	/**
 	 * Method to register user accounts with the encryptics service
 	 * @param user
@@ -109,7 +130,7 @@ public class Account {
 	 */
 	public EncrypticsResponseCode Authenticate(ProgressDialog progress){
 
-		new LoginTask(progress).execute(SafeFolder.Instance().User().Username(), SafeFolder.Instance().User().Password());
+		new LoginTask(progress, authenticationCompletedListener).execute(SafeFolder.Instance().User().Username(), SafeFolder.Instance().User().Password());
 
 		return _loginResponse;
 	}
@@ -117,9 +138,11 @@ public class Account {
 
 	private static class LoginTask extends AsyncTask<String, Void, EncrypticsResponseCode>{
 		private ProgressDialog _progress;
+		public AuthenticationCompleted authenticationCompletedListener;
 
-		public LoginTask(ProgressDialog progress){
+		public LoginTask(ProgressDialog progress, AuthenticationCompleted authenticationCompletedListener){
 			_progress = progress;
+			this.authenticationCompletedListener = authenticationCompletedListener;
 		}
 
 		@Override
@@ -130,14 +153,16 @@ public class Account {
 			String password = SafeFolder.Instance().User().Password();
 
 			AndroidAccountContextFactory factory = new AndroidAccountContextFactory(SafeFolder.Instance().getApplicationContext());
-			_accountContext = factory.generateAccountContext(username, password);
+			AccountContext accountContext = factory.generateAccountContext(username, password);
+			_accountContext = accountContext;
 
-			EncrypticsResponseCode loginResponse = _accountContext.login();
+			EncrypticsResponseCode loginResponse = accountContext.login();
 
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				SafeFolder.Instance().Log(e.getMessage());
 			}
 
 			if(loginResponse == EncrypticsResponseCode.SUCCESS){
@@ -145,14 +170,10 @@ public class Account {
 				responseCode = EncrypticsResponseCode.SUCCESS;
 			}else{
 				SafeFolder.Instance().User().IsLoggedIn(false);
-				responseCode = EncrypticsResponseCode.UNKNOWN;
+				responseCode = EncrypticsResponseCode.LOGIN_DENIED;
 			}
 
 			return responseCode;
-		}
-
-		@Override
-		public void onPreExecute(){
 		}
 
 		@Override
@@ -169,7 +190,10 @@ public class Account {
 			}
 
 			_loginResponse = code;
-			SafeFolder.Instance().Close();
+
+			authenticationCompletedListener.onAuthenticationCompleted();
+
+			//TODO: May need to re-show the login activity here
 		}
 	}
 }

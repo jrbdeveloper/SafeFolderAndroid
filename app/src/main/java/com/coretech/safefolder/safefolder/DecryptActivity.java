@@ -69,6 +69,19 @@ public class DecryptActivity extends Activity {
 
 	//region Private Methods
 	private void addEncryptedFilesToList(){
+
+		if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getEncodedPath() != null){
+			String filePath = getIntent().getData().getEncodedPath();
+			ListItem fileItem = new ListItem();
+			fileItem.setText(filePath);
+
+			SafeFolder.Instance().File().Collection().clear();
+
+			if(!SafeFolder.Instance().File().Collection().contains(fileItem)){
+				SafeFolder.Instance().File().Collection().add(fileItem);
+			}
+		}
+
 		if(SafeFolder.Instance().File().Collection().size() > 0){
 			for(ListItem item : SafeFolder.Instance().File().Collection()){
 				_listArray.add(SafeFolder.Instance().File().getNameFromPath(item.getText()));

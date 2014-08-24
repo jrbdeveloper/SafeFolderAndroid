@@ -1,9 +1,7 @@
 package com.coretech.safefolder.safefolder;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,8 +13,6 @@ import android.widget.Toast;
 
 import com.coretech.safefolder.safefolder.entities.ListItem;
 import com.coretech.safefolder.safefolder.utilities.ListAdapter;
-
-import java.io.File;
 
 public class EncryptActivity extends Activity {
 
@@ -64,7 +60,9 @@ public class EncryptActivity extends Activity {
 
 				// Take the text from the box and add it to the list view
 				if(emailListViewSelectedIndex[0] < 0){
-					SafeFolder.Instance().Email().Collection().add(item);
+					if(!SafeFolder.Instance().Email().Collection().contains(item)){
+						SafeFolder.Instance().Email().Collection().add(item);
+					}
 				}else{
 					SafeFolder.Instance().Email().Collection().set(emailListViewSelectedIndex[0], item);
 					emailListViewSelectedIndex[0] = -1;
@@ -99,7 +97,7 @@ public class EncryptActivity extends Activity {
 		encryptButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
 				encryptButton.setEnabled(false);
-				SafeFolder.Instance().Security().EncryptFiles(SafeFolder.Instance().File().GetCollection(), SafeFolder.Instance().Email().Collection(), false);
+				SafeFolder.Instance().Security().EncryptFiles(SafeFolder.Instance().File().Collection(), SafeFolder.Instance().Email().Collection(), false);
 				SafeFolder.Instance().getCurrentActivity().finish();
 				encryptButton.setEnabled(true);
 			}

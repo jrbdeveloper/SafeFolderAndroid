@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 17
+    compileSdkVersion 19
     buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId 'com.coretech.safefolder.safefolder'
-        minSdkVersion 15
-        targetSdkVersion 17
+        minSdkVersion 17
+        targetSdkVersion 19
         versionCode 1
         versionName '1.0'
     }

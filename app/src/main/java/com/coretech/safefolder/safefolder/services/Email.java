@@ -3,7 +3,6 @@ package com.coretech.safefolder.safefolder.services;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -59,14 +58,20 @@ public class Email {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_EMAIL, newEmailList);
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            intent.putExtra(Intent.EXTRA_TEXT, body);
+            //intent.putExtra(Intent.EXTRA_TEXT, body);
+			ArrayList<String> extra_text = new ArrayList<String>();
+			extra_text.add(body);
+			intent.putStringArrayListExtra(android.content.Intent.EXTRA_TEXT, extra_text);
+
             //intent.setType("message/rfc822");
 			intent.setType("*/*");
 
             ArrayList<Uri> uri = new ArrayList<Uri>();
             for (int i = 0; i < attachmentPath.size(); i++) {
                 File file = new File(attachmentPath.get(i).getText().replace("unsafe","safe") + SafeFolder.Instance().getSafeExtension());
-                uri.add(Uri.fromFile(file));
+                if(!uri.contains(Uri.fromFile(file))){
+					uri.add(Uri.fromFile(file));
+				}
             }
 
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uri);
@@ -75,6 +80,7 @@ public class Email {
 
         } catch (Exception ex) {
             ex.printStackTrace();
+			SafeFolder.Instance().Log(ex.getMessage());
         }
 	}
 	//endregion

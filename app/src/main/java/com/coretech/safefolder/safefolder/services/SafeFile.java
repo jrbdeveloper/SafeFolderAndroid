@@ -26,10 +26,6 @@ public class SafeFile {
 	private ArrayList<ListItem> _unsafeFiles;
 	//endregion
 
-	//region Public Members
-
-	//endregion
-
 	//region Constructor
 	public SafeFile(){
 		if(_collection == null){
@@ -74,14 +70,14 @@ public class SafeFile {
             Bundle bundle = SafeFolder.Instance().getCurrentActivity().getIntent().getExtras();
             Uri i = (Uri) bundle.get("android.intent.extra.STREAM");
 
-            ListItem inputItem = new ListItem();
-            ListItem outputItem = new ListItem();
+			ListItem inputItem = new ListItem();
+			ListItem outputItem = new ListItem();
 
             inputItem.setText(i.getPath());
             outputItem.setText(getNameFromPath(inputItem.getText()));
 
             //mws delete the toast and encrypt here
-			if(!_collection.contains(inputItem.getText())){
+			if(!_collection.contains(inputItem)){
 				_collection.add(inputItem);
 			}
 
@@ -92,14 +88,11 @@ public class SafeFile {
             for (Object p : list) {
                 Uri uri = (Uri) p; /// do something with it.
 
-                //Create input and output paths
-                ListItem inputItem = new ListItem();
-                ListItem outputItem = new ListItem();
+				ListItem item = new ListItem();
+				item.setText(uri.getPath());
 
-                inputItem.setText(uri.getPath());
-
-				if(!_collection.contains(inputItem.getText())){
-					_collection.add(inputItem);
+				if(!_collection.contains(item)){
+					_collection.add(item);
 				}
             }
         }
@@ -116,9 +109,9 @@ public class SafeFile {
 			File safeFiles = new File(parent + "/safe");
 			File unsafeFiles = new File(parent + "/unsafe");
 
-			parent.mkdir();
-			safeFiles.mkdir();
-			unsafeFiles.mkdir();
+			if(!parent.exists()){parent.mkdir();}
+			if(!safeFiles.exists()){safeFiles.mkdir();}
+			if(!unsafeFiles.exists()){unsafeFiles.mkdir();}
 		}
 	}
 
@@ -158,8 +151,9 @@ public class SafeFile {
 			long count = 0;
 			long size = source.size();
 			while((count += destination.transferFrom(source, count, size-count))<size);
-		}
-		finally {
+		}catch (Exception e){
+			SafeFolder.Instance().Log(e.getMessage());
+		}finally {
 			if(source != null) {
 				source.close();
 			}
@@ -198,6 +192,7 @@ public class SafeFile {
 		}
 		if (!((mExternalStorageAvailable) && (mExternalStorageWriteable))) {
 			Toast.makeText(SafeFolder.Instance().getApplicationContext(), "SD card not present", Toast.LENGTH_LONG).show();
+			SafeFolder.Instance().Log("SD card not present");
 		}
 
 		return (mExternalStorageAvailable) && (mExternalStorageWriteable);
